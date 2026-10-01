@@ -40,9 +40,15 @@ Modelled on Digital Omamori's Emergency mode: in a crisis the first card is enou
 2. **Act**: the model picks up to 3 actions from 8 (ambulance, fire, rescue, protect, first aid, find person, shelter, listen) using clear signals only; unclear → `listen`. JS re-sorts them by a fixed urgency order.
 3. **Card**: actions (largest first) and notes (allergy, pregnant, can't walk, little Japanese) are pre-written Japanese with a Chinese/English line; the translation sits in a dashed "What happened — AI translation" box with the original message.
 
+## Design rules
+
+- No phone numbers anywhere (the user is already on site; a small model can mistype numbers).
+- No emoji (rendering differs by device). Numbered badges are drawn in CSS.
+- Every Japanese line has a pre-written Traditional Chinese / English line under it.
+
 ## Limits
 
 - Not a medical or emergency service. The skills only make cards to show to people on site; they never suggest phone numbers (a small model can mistype them).
 - `sick-visit-memo` is a parent's record, not a diagnosis.
-- ✕ removes a wrong action. To add something, the user just says it again in the chat; the model re-issues the card. Anything the model could not map is shown to the user, never silently dropped.
+- × removes a wrong action. To add something, the user just says it again in the chat; the model re-issues the card. Anything the model could not map is shown to the user, never silently dropped.
 - Japanese phrase list is a first version; additions welcome.

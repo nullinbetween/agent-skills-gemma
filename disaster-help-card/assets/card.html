@@ -116,7 +116,7 @@
       const r = A[k];
       h += `<div class="act ${i === 0 ? 'first' : ''}"><div class="ico">${r[0]}</div><div class="txt"><div class="ja">${r[1]}</div>` +
         `${tr(r, S.ui === 'zh' ? 2 : 3) ? `<div class="tr">${tr(r, S.ui === 'zh' ? 2 : 3)}</div>` : ''}</div>` +
-        (S.actions.length > 1 ? `<button class="x" data-act="del" data-k="${k}" aria-label="remove">✕</button>` : '') + `</div>`;
+        (S.actions.length > 1 ? `<button class="x" data-act="del" data-k="${k}" aria-label="remove">×</button>` : '') + `</div>`;
     });
     if (S.notes.length) {
       h += `<div class="box notes"><div class="bl">気（き）を つけて ください${t.notes ? ' · ' + t.notes : ''}</div>`;
