@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>助けが必要です</title>
+<style>
+  :root { --moon:#FBFBFE; --moon-2:#EEF0F7; --ink:#3D4050; --ink-soft:#878BA1; --ink-faint:#B4B7C8; --line:rgba(150,156,186,.24);
+    --lav:#D0CAE9; --lav-deep:#9189C0; --sky:#CBDAEE; --sky-deep:#7B99C0; --rose:#EAD6DB; --rose-deep:#BE96A0; --gold:#E9DEC2; --gold-deep:#B49A63;
+    --red:#C0392B; --red-soft:#F6D5D1; --shadow-card:0 5px 24px rgba(130,135,170,.08);
+    --sans: Arial, "Hiragino Sans", "Noto Sans JP", "PingFang TC", sans-serif; --num: "Inter", Arial, "Helvetica Neue", sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: linear-gradient(var(--moon), var(--moon-2)); min-height: 100vh; color: var(--ink); font-family: var(--sans); padding: 16px 14px 24px; }
+  button { font-family: inherit; cursor: pointer; }
+  .brand { text-align: center; font-family: var(--num); font-weight: 600; font-size: 17px; letter-spacing: 2px;
+    background: linear-gradient(#5A5E72, #9AA0B6 55%, #D5D9E6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .brand i { font-style: normal; background: linear-gradient(var(--lav-deep), var(--lav)); -webkit-background-clip: text; background-clip: text; }
+  .card { background: rgba(255,255,255,.66); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-card); }
+  .notice { margin-top: 12px; background: var(--gold); border-radius: 12px; padding: 10px 36px 10px 12px; font-size: 13px; line-height: 1.5; position: relative; color: #6b5a33; }
+  .notice b { display: block; margin-bottom: 2px; }
+  .notice .x { position: absolute; top: 6px; right: 6px; }
+  .sos { margin-top: 12px; background: var(--red); color: #fff; border-radius: 12px; box-shadow: 0 4px 14px rgba(192,57,43,.35); padding: 16px; text-align: center; }
+  .sos .ja { font-size: 21px; font-weight: 700; line-height: 1.5; }
+  .sos .sub { font-size: 12.5px; opacity: .88; margin-top: 4px; }
+  .list { margin-top: 14px; padding: 2px 14px; }
+  .item { display: flex; gap: 12px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .item:last-child { border-bottom: 0; }
+  .ico { flex: 0 0 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 21px; }
+  .t-red .ico { background: var(--red-soft); } .t-rose .ico { background: var(--rose); } .t-gold .ico { background: var(--gold); }
+  .t-lav .ico { background: var(--lav); } .t-sky .ico { background: var(--sky); }
+  .body { flex: 1; min-width: 0; }
+  .num { font-family: var(--num); font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--ink-faint); }
+  .item .ja { font-size: 21px; font-weight: 700; line-height: 1.5; }
+  .item .ja b { display: inline-block; background: var(--rose); color: #8a4a58; border-radius: 8px; padding: 0 8px; margin-top: 4px; }
+  .item .tr { font-size: 13px; color: var(--ink-soft); margin-top: 4px; line-height: 1.5; }
+  .item .own { font-size: 13px; color: var(--ink); background: var(--moon-2); border-radius: 8px; padding: 4px 8px; margin-top: 6px; }
+  .x { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; border: 0; background: transparent; color: var(--ink-faint); font-size: 15px; line-height: 26px; }
+  .empty { padding: 18px 0; text-align: center; color: var(--ink-soft); font-size: 14px; }
+  .row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .btn { padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: 999px; border: 0; background: var(--lav); color: #4A4470; }
+  .btn.ghost { background: transparent; border: 1px solid var(--lav-deep); color: #4A4470; }
+  .panel { margin-top: 12px; padding: 12px; }
+  .panel h3 { font-size: 12px; color: var(--ink-soft); font-weight: 600; margin: 10px 2px 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 7px 12px; font-size: 14px; }
+  .chip.on { background: var(--rose); border-color: var(--rose-deep); }
+  .foot { font-size: 11px; color: var(--ink-faint); line-height: 1.6; text-align: center; margin-top: 14px; }
+  .big .item .ja { font-size: 28px; } .big .sos .ja { font-size: 27px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  // ── Single source of truth for all card text. Japanese must be proofread by a human. ──
+  const HEAD = { ja: 'すみません。助けが必要です。<br>この画面を読んでください。',
+    zh: '不好意思，我需要幫助。請看這個畫面。', en: 'Excuse me, I need help. Please read this screen.' };
+
+  // code: [icon, tone, Japanese, 中文, English, short label 中文, short label English]
+  const P = {
+    emergency:   ['🚑','red','救急車を呼んでください。','請幫我叫救護車。','Please call an ambulance.','叫救護車','Ambulance'],
+    danger:      ['🆘','red','不審な人につけられています。助けてください。','有可疑的人在跟蹤我，請幫幫我。','A suspicious person is following me. Please help.','被跟蹤／有危險','Followed / unsafe'],
+    injured:     ['🩹','rose','けがをしています。手当てをお願いします。','我受傷了，請幫我處理傷口。','I am injured. Please give first aid.','我受傷','I am injured'],
+    family_injured:['🤕','rose','家族がけがをしています。助けてください。','我的家人受傷了，請幫忙。','My family member is injured. Please help.','家人受傷','Family injured'],
+    sick:        ['🤒','rose','体調が悪いです。','我身體不舒服。','I feel sick.','身體不舒服','Feel sick'],
+    pregnant:    ['🤰','rose','妊娠しています。','我懷孕了。','I am pregnant.','懷孕','Pregnant'],
+    mobility:    ['♿','rose','移動に手助けが必要です。','我移動需要協助。','I need help moving.','移動需要協助','Need help moving'],
+    medicine:    ['💊','rose','いつも飲んでいる薬が必要です。','我需要平常在吃的藥。','I need my regular medicine.','平常吃的藥','Regular medicine'],
+    allergy:     ['⚠️','gold','食物アレルギーがあります。','我有食物過敏。','I have a food allergy.','食物過敏','Food allergy'],
+    no_pork:     ['🚫','gold','豚肉が食べられません。','我不能吃豬肉。','I cannot eat pork.','不吃豬肉','No pork'],
+    vegetarian:  ['🥦','gold','肉と魚が食べられません。','我不吃肉和魚。','I do not eat meat or fish.','不吃肉和魚','Vegetarian'],
+    water:       ['💧','gold','飲み水が必要です。','我需要飲用水。','I need drinking water.','飲用水','Water'],
+    food:        ['🍙','gold','食べ物が必要です。','我需要食物。','I need food.','食物','Food'],
+    with_child:  ['👶','lav','小さい子どもと一緒です。','我帶著小孩。','I am with a small child.','帶著小孩','With a child'],
+    formula:     ['🍼','lav','粉ミルクが必要です。','我需要嬰兒奶粉。','I need baby formula.','嬰兒奶粉','Baby formula'],
+    diapers:     ['🧷','lav','おむつが必要です。','我需要尿布。','I need diapers.','尿布','Diapers'],
+    lost_family: ['👨‍👩‍👧','lav','家族とはぐれました。','我和家人走散了。','I am separated from my family.','和家人走散','Lost family'],
+    no_japanese: ['🗣️','sky','日本語があまり話せません。<br>やさしい日本語で、ゆっくり話してください。','我不太會說日文，請用簡單的日文慢慢說。','I do not speak much Japanese. Please speak slowly in simple Japanese.','不太會日文','Little Japanese'],
+    other:       ['💬','sky','ほかにも困っていることがあります。話を聞いてください。','我還有其他困難，請聽我說。','I have another problem. Please listen to me.','其他困難','Something else'],
+    shelter:     ['🏫','sky','避難所はどこですか。','避難所在哪裡？','Where is the evacuation shelter?','避難所在哪','Shelter'],
+    toilet:      ['🚻','sky','トイレはどこですか。','廁所在哪裡？','Where is the toilet?','廁所在哪','Toilet'],
+    charging:    ['🔋','sky','携帯電話を充電したいです。','我想幫手機充電。','I want to charge my phone.','手機充電','Charge phone'],
+  };
+  const ORDER = Object.keys(P);
+
+  const ALG = { egg:['卵','蛋','egg'], milk:['乳（牛乳・乳製品）','牛奶／乳製品','milk / dairy'], wheat:['小麦','小麥','wheat'],
+    shrimp:['えび','蝦','shrimp'], crab:['かに','蟹','crab'], buckwheat:['そば','蕎麥','buckwheat'],
+    peanut:['落花生（ピーナッツ）','花生','peanut'], walnut:['くるみ','核桃','walnut'], soy:['大豆','大豆','soy'],
+    sesame:['ごま','芝麻','sesame'], fish:['魚','魚','fish'] };
+
+  const LANG = { english:['英語','英文','English'], mandarin:['中国語（普通話）','普通話','Mandarin'], cantonese:['広東語','廣東話','Cantonese'],
+    korean:['韓国語','韓文','Korean'], vietnamese:['ベトナム語','越南語','Vietnamese'], nepali:['ネパール語','尼泊爾語','Nepali'],
+    tagalog:['タガログ語','他加祿語','Tagalog'], thai:['タイ語','泰文','Thai'], indonesian:['インドネシア語','印尼文','Indonesian'],
+    spanish:['スペイン語','西班牙文','Spanish'], portuguese:['ポルトガル語','葡萄牙文','Portuguese'], french:['フランス語','法文','French'] };
+
+  // UI words in the user's language
+  const T = {
+    zh: { notOn:'這些內容卡片上沒有，請直接告訴對方，或用「＋ 加項目」補上：', add:'＋ 加項目', close:'完成', big:'放大字體', pick:'請點選你需要的項目', alg:'過敏原', lang:'我會說的語言' },
+    en: { notOn:'These are NOT on the card. Tell people directly, or use "+ Add":', add:'+ Add', close:'Done', big:'Bigger text', pick:'Tap what you need', alg:'Allergens', lang:'Language I speak' },
+    ja: { notOn:'次の内容はカードにありません。直接伝えるか「＋ 追加」で足してください：', add:'＋ 追加', close:'完了', big:'文字を大きく', pick:'必要なものを選んでください', alg:'アレルギー', lang:'話せる言語' },
+  };
+
+  const qs = new URLSearchParams(location.search);
+  const list = (k) => (qs.get(k) || '').split(',').filter(Boolean);
+  const S = {
+    needs: new Set(list('n').filter(k => P[k])),
+    allergens: new Set(list('a').filter(k => ALG[k])),
+    interp: LANG[qs.get('i')] ? qs.get('i') : '',
+    ui: ['zh','en','ja'].includes(qs.get('ui')) ? qs.get('ui') : 'en',
+    unmatched: (() => { try { const u = JSON.parse(qs.get('u') || '[]'); return Array.isArray(u) ? u : []; } catch (e) { return []; } })(),
+    showNotice: true, panel: false, big: false,
+  };
+  S.panel = S.needs.size === 0;
+  const t = T[S.ui];
+  const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  const tr = (r) => S.ui === 'zh' ? r[3] : S.ui === 'en' ? r[4] : '';
+  const short = (r) => S.ui === 'zh' ? r[5] : S.ui === 'en' ? r[6] : r[2].replace(/<br>.*/, '');
+  const lab3 = (arr) => S.ui === 'zh' ? arr[1] : S.ui === 'en' ? arr[2] : arr[0];
+
+  function render() {
+    let h = `<div class="brand">Help <i>✦</i> Card</div>`;
+    if (S.unmatched.length && S.showNotice) {
+      h += `<div class="notice"><b>${t.notOn}</b>${S.unmatched.map(u => '「' + esc(u) + '」').join('　')}<button class="x" data-act="notice" aria-label="close">✕</button></div>`;
+    }
+    h += `<div class="sos"><div class="ja">${HEAD.ja}</div>${S.ui !== 'ja' ? `<div class="sub">${HEAD[S.ui]}</div>` : ''}</div>`;
+    h += `<div class="card list">`;
+    const items = ORDER.filter(k => S.needs.has(k));
+    if (!items.length) h += `<div class="empty">${t.pick}</div>`;
+    items.forEach((k, idx) => {
+      const r = P[k];
+      let ja = r[2], tx = tr(r), extra = '';
+      const al = [...S.allergens];
+      if (k === 'allergy' && al.length) {
+        ja += `<br>次のものが食べられません：<br><b>${al.map(a => ALG[a][0]).join('、')}</b>`;
+        if (tx) tx += ' ' + (S.ui === 'zh' ? '不能吃：' + al.map(a => ALG[a][1]).join('、') : 'Cannot eat: ' + al.map(a => ALG[a][2]).join(', '));
+      }
+      if (k === 'no_japanese' && S.interp) {
+        ja += `<br><b>${LANG[S.interp][0]}</b>が話せる人はいますか。`;
+        if (tx) tx += ' ' + (S.ui === 'zh' ? `有會說${LANG[S.interp][1]}的人嗎？` : `Is there anyone who speaks ${LANG[S.interp][2]}?`);
+      }
+      if (k === 'other' && S.unmatched.length) extra = `<div class="own">本人の言葉：${S.unmatched.map(u => '「' + esc(u) + '」').join(' ')}</div>`;
+      h += `<div class="item t-${r[1]}"><div class="ico">${r[0]}</div><div class="body"><div class="num">${String(idx + 1).padStart(2, '0')}</div>` +
+        `<div class="ja">${ja}</div>${tx ? `<div class="tr">${tx}</div>` : ''}${extra}</div>` +
+        `<button class="x" data-act="del" data-k="${k}" aria-label="remove">✕</button></div>`;
+    });
+    h += `</div>`;
+    h += `<div class="row"><button class="btn ghost" data-act="panel">${S.panel ? t.close : t.add}</button><button class="btn" data-act="big">${t.big}</button></div>`;
+    if (S.panel) {
+      h += `<div class="card panel"><div class="chips">` +
+        ORDER.filter(k => !S.needs.has(k)).map(k => `<button class="chip" data-act="add" data-k="${k}">${P[k][0]} ${short(P[k])}</button>`).join('') + `</div>`;
+      if (S.needs.has('allergy')) {
+        h += `<h3>${t.alg}</h3><div class="chips">` + Object.keys(ALG).map(a =>
+          `<button class="chip ${S.allergens.has(a) ? 'on' : ''}" data-act="alg" data-k="${a}">${lab3(ALG[a])}</button>`).join('') + `</div>`;
+      }
+      if (S.needs.has('no_japanese')) {
+        h += `<h3>${t.lang}</h3><div class="chips">` + Object.keys(LANG).map(l =>
+          `<button class="chip ${S.interp === l ? 'on' : ''}" data-act="lang" data-k="${l}">${lab3(LANG[l])}</button>`).join('') + `</div>`;
+      }
+      h += `</div>`;
+    }
+    h += `<div class="foot">このカードは端末内（オフライン）で作成されました。<br>日本語の文はすべて事前に確認済みの定型文です。<br>Generated on-device, offline. Japanese sentences are pre-written, not AI-generated.</div>`;
+    document.body.classList.toggle('big', S.big);
+    document.getElementById('root').innerHTML = h;
+  }
+
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-act]'); if (!b) return;
+    const k = b.dataset.k;
+    switch (b.dataset.act) {
+      case 'del': S.needs.delete(k); if (k === 'allergy') S.allergens.clear(); if (k === 'no_japanese') S.interp = ''; break;
+      case 'add': S.needs.add(k); break;
+      case 'alg': S.allergens.has(k) ? S.allergens.delete(k) : S.allergens.add(k); break;
+      case 'lang': S.interp = S.interp === k ? '' : k; break;
+      case 'panel': S.panel = !S.panel; break;
+      case 'big': S.big = !S.big; break;
+      case 'notice': S.showNotice = false; break;
+    }
+    render();
+  });
+  render();
+</script>
+</body>
+</html>

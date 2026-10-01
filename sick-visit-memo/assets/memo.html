@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>受診メモ</title>
+<style>
+  :root { --moon:#FBFBFE; --moon-2:#EEF0F7; --ink:#3D4050; --ink-soft:#878BA1; --ink-faint:#B4B7C8; --line:rgba(150,156,186,.24);
+    --lav:#D0CAE9; --lav-deep:#9189C0; --sky:#CBDAEE; --sky-deep:#7B99C0; --red:#C0392B; --shadow-card:0 5px 24px rgba(130,135,170,.08);
+    --sans: Arial, "Hiragino Sans", "Noto Sans JP", "PingFang TC", sans-serif; --num: "Inter", Arial, "Helvetica Neue", sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: linear-gradient(var(--moon), var(--moon-2)); min-height: 100vh; color: var(--ink); font-family: var(--sans); padding: 16px 14px 24px; }
+  .brand { text-align: center; font-family: var(--num); font-weight: 600; font-size: 17px; letter-spacing: 2px;
+    background: linear-gradient(#5A5E72, #9AA0B6 55%, #D5D9E6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .brand i { font-style: normal; background: linear-gradient(var(--lav-deep), var(--lav)); -webkit-background-clip: text; background-clip: text; }
+  .card { background: rgba(255,255,255,.66); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-card); }
+  .head { margin-top: 12px; padding: 16px; text-align: center; background: linear-gradient(#FCFAF7, #F2EBE2); border: 1px solid #E4DACF; border-radius: 16px; }
+  h1 { font-size: 22px; font-weight: 700; color: #7A5C3E; letter-spacing: 2px; }
+  h1 small { display: block; font-size: 12px; font-weight: 400; color: var(--ink-soft); letter-spacing: .5px; margin-top: 2px; }
+  .ts { font-family: var(--num); font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
+  .hint { margin-top: 10px; font-size: 12.5px; color: var(--sky-deep); text-align: center; }
+  .rows { margin-top: 12px; padding: 2px 14px; }
+  .row { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .k { flex: 0 0 5.4em; font-weight: 700; color: var(--sky-deep); font-size: 14.5px; }
+  .k .tr { display: block; font-weight: 400; font-size: 11px; color: var(--ink-faint); }
+  .v { flex: 1; min-width: 0; font-size: 17px; line-height: 1.5; }
+  .v .tr { display: block; font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; margin-top: 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { background: var(--sky); color: #3f5a7d; border-radius: 12px; padding: 3px 11px; font-size: 15.5px; line-height: 1.35; text-align: center; }
+  .chip .tr { font-size: 11px; color: #5d789b; margin-top: 0; }
+  .tl { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+  .tl:last-child { border-bottom: 0; }
+  .tl .t { font-family: var(--num); font-weight: 700; white-space: nowrap; }
+  .tl .t.hi { color: var(--red); }
+  .note { white-space: pre-wrap; font-size: 15px; background: var(--moon-2); border-radius: 10px; padding: 8px 10px; }
+  .foot { font-size: 11px; color: var(--ink-faint); line-height: 1.6; text-align: center; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  // ── Single source of truth for all memo text. Japanese must be proofread by a human. ──
+  // [Japanese, 中文, English]
+  const SYM = { fever:['発熱','發燒','fever'], cough:['せき','咳嗽','cough'], runny_nose:['鼻水','流鼻水','runny nose'],
+    stuffy_nose:['鼻づまり','鼻塞','stuffy nose'], sore_throat:['のどの痛み','喉嚨痛','sore throat'], vomiting:['嘔吐','嘔吐','vomiting'],
+    diarrhea:['下痢','腹瀉','diarrhea'], stomach_ache:['腹痛','肚子痛','stomach ache'], headache:['頭痛','頭痛','headache'],
+    ear_pain:['耳の痛み','耳朵痛','ear pain'], rash:['発疹','出疹子','rash'], wheezing:['ゼーゼーする（喘鳴）','呼吸有喘鳴聲','wheezing'],
+    no_appetite:['食欲がない','沒胃口','no appetite'], poor_sleep:['よく眠れない','睡不好','poor sleep'], listless:['ぐったりしている','沒精神、軟軟的','listless'] };
+  const TIME = { morning:['朝','早上','morning'], afternoon:['昼','中午','afternoon'], evening:['夕方','傍晚','evening'], night:['夜','晚上','night'] };
+  const LVK = ['normal','less','very_little'];
+  const LV = {
+    e:  [['ふだん通り','跟平常一樣','as usual'], ['少なめ','比平常少','less than usual'], ['ほとんど食べない','幾乎沒吃','almost nothing']],
+    dr: [['ふだん通り','跟平常一樣','as usual'], ['少なめ','比平常少','less than usual'], ['ほとんど飲まない','幾乎沒喝','almost nothing']],
+    u:  [['ふだん通り','跟平常一樣','as usual'], ['少なめ','比平常少','less than usual'], ['ほとんど出ない','幾乎沒有小便','almost none']],
+  };
+  const L = { age:['年齢','年齡','Age'], sym:['症状','症狀','Symptoms'], fd:['発熱の日数','發燒天數','Fever days'], onset:['いつから','何時開始','Since'],
+    temp:['体温','體溫','Temperature'], fr:['解熱剤','退燒藥','Fever reducer'], eat:['食事','食量','Eating'], drink:['水分','喝水','Drinking'],
+    urine:['尿','小便','Urine'], vom:['嘔吐','嘔吐','Vomiting'], dia:['下痢','腹瀉','Diarrhea'], note:['保護者メモ','家長備註','Parent notes'] };
+  const HINT = { zh:'請確認每一行下面的中文是否正確，再拿給醫院看。', en:'Check the English line under each item before showing this at the clinic.', ja:'' };
+
+  let d = {};
+  try { d = JSON.parse(new URLSearchParams(location.search).get('d') || '{}'); } catch (e) { d = {}; }
+  const ui = ['zh','en','ja'].includes(d.ui) ? d.ui : 'en';
+  const I = ui === 'zh' ? 1 : 2;                       // index of the parent's language in each [ja, zh, en]
+  const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  const pair = (ja, other) => `${ja}${ui !== 'ja' && other ? `<span class="tr">${other}</span>` : ''}`;
+  const lab = (k) => `${L[k][0]}${ui !== 'ja' ? `<span class="tr">${L[k][I]}</span>` : ''}`;
+
+  // "days ago" → real date, anchored to the device time stamped in scripts/index.html
+  const base = d.ts ? new Date(d.ts.replace(' ', 'T')) : new Date();
+  const md = (n) => { const x = new Date(base); x.setDate(x.getDate() - n); return `${x.getMonth() + 1}/${x.getDate()}`; };
+  const DAY = [['今日','今天','today'], ['昨日','昨天','yesterday'], ['おととい','前天','2 days ago']];
+  const dayW = (n, lang) => n < 3 ? DAY[n][lang] : (lang === 0 ? `${n}日前` : lang === 1 ? `${n}天前` : `${n} days ago`);
+  const UNK = ['時間不明','時間不明','time unknown'];
+  const when = (r, lang) => {
+    if (r.d === null || r.d === undefined) return r.t ? TIME[r.t][lang] : UNK[lang];
+    const day = `${dayW(r.d, lang)}（${md(r.d)}）`, tm = r.t ? TIME[r.t][lang] : '';
+    return lang === 0 ? day + (tm ? 'の' + tm : '') : lang === 1 ? day + tm : (tm ? tm + ', ' : '') + day;
+  };
+
+  let h = `<div class="brand">Visit <i>✦</i> Memo</div><div class="head"><h1>受診メモ<small>保護者記入 ✦ Parent's note</small></h1><div class="ts">作成 ${esc(d.ts || '')}</div></div>`;
+  if (HINT[ui]) h += `<div class="hint">${HINT[ui]}</div>`;
+  h += `<div class="card rows">`;
+  const row = (k, v) => { h += `<div class="row"><div class="k">${lab(k)}</div><div class="v">${v}</div></div>`; };
+
+  if (d.ay !== undefined) row('age', pair(`${d.ay}歳${d.am ? d.am + 'か月' : ''}`, ui === 'zh' ? `${d.ay}歲${d.am ? d.am + '個月' : ''}` : `${d.ay} y${d.am ? ' ' + d.am + ' m' : ''}`));
+  if (d.s && d.s.length) row('sym', `<div class="chips">${d.s.map(s => `<span class="chip">${pair(SYM[s][0], SYM[s][I])}</span>`).join('')}</div>`);
+  if (d.fd !== undefined) row('fd', pair(`熱が${d.fd}日続いています`, ui === 'zh' ? `已經發燒${d.fd}天` : `Fever for ${d.fd} day(s)`));
+  if (d.od !== undefined) {
+    const r = { d: d.od, t: d.ot || '' };
+    row('onset', pair(`${when(r, 0)}から`, ui === 'zh' ? `${when(r, 1)}開始` : `Since ${when(r, 2)}`));
+  }
+  if (d.t && d.t.length) row('temp', d.t.map(r => `<div class="tl"><span>${pair(when(r, 0), when(r, I))}</span><span class="t ${r.v >= 38 ? 'hi' : ''}">${r.v.toFixed(1)}℃</span></div>`).join(''));
+  if (d.f && d.f.length) row('fr', d.f.map(r => `<div>${pair('使用：' + when(r, 0), (ui === 'zh' ? '用了：' : 'Given: ') + when(r, I))}</div>`).join(''));
+  if (d.e) row('eat', pair(LV.e[LVK.indexOf(d.e)][0], LV.e[LVK.indexOf(d.e)][I]));
+  if (d.dr) row('drink', pair(LV.dr[LVK.indexOf(d.dr)][0], LV.dr[LVK.indexOf(d.dr)][I]));
+  if (d.u) row('urine', pair(LV.u[LVK.indexOf(d.u)][0], LV.u[LVK.indexOf(d.u)][I]));
+  if (d.vc !== undefined) row('vom', pair(`1日${d.vc}回`, ui === 'zh' ? `一天${d.vc}次` : `${d.vc} times a day`));
+  if (d.dc !== undefined) row('dia', pair(`1日${d.dc}回`, ui === 'zh' ? `一天${d.dc}次` : `${d.dc} times a day`));
+  if (d.n) row('note', `<div class="note">${esc(d.n)}</div>`);
+  h += `</div>`;
+  h += `<div class="foot">※保護者による記録です。診断ではありません。<br>端末内（オフライン）で作成。日本語は定型文で、AIが生成した文ではありません。<br>Parent's record, not a diagnosis. Generated on-device; Japanese is fixed templates.</div>`;
+  document.getElementById('root').innerHTML = h;
+</script>
+</body>
+</html>

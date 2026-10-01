@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script>
+  // Validates the facts the model extracted, flags impossible values,
+  // then hands clean data to assets/memo.html. No Japanese text here.
+  const SYM = ['fever','cough','runny_nose','stuffy_nose','sore_throat','vomiting','diarrhea','stomach_ache',
+    'headache','ear_pain','rash','wheezing','no_appetite','poor_sleep','listless'];
+  const TIMES = ['morning','afternoon','evening','night'];
+  const LEVEL = ['normal','less','very_little'];
+
+  const norm = (s) => String(s || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  const num = (v) => (v === null || v === undefined || v === '') ? null : Number(v);
+  const okInt = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+
+  window['ai_edge_gallery_get_result'] = async (dataStr) => {
+    try {
+      const x = typeof dataStr === 'string' ? JSON.parse(dataStr) : (dataStr || {});
+      const warn = [];
+      const out = {};
+
+      const ay = num(x.age_years), am = num(x.age_months);
+      if (ay !== null) { if (okInt(ay, 0, 18)) out.ay = ay; else warn.push(`age_years=${x.age_years}`); }
+      if (am !== null) { if (okInt(am, 0, 11)) out.am = am; else warn.push(`age_months=${x.age_months}`); }
+
+      out.s = [];
+      for (const raw of (Array.isArray(x.symptoms) ? x.symptoms : [])) {
+        const c = norm(raw);
+        if (SYM.includes(c)) { if (!out.s.includes(c)) out.s.push(c); } else warn.push(`symptom "${raw}" not on list`);
+      }
+
+      const od = num(x.onset_days_ago);
+      if (od !== null) { if (okInt(od, 0, 30)) out.od = od; else warn.push(`onset_days_ago=${x.onset_days_ago}`); }
+      if (x.onset_time) { const t = norm(x.onset_time); if (TIMES.includes(t)) out.ot = t; else warn.push(`onset_time=${x.onset_time}`); }
+
+      // days_ago / time are optional: if the parent did not say when, the memo shows "time unknown".
+      const readTime = (r, label) => {
+        const d = num(r && r.days_ago), t = norm(r && r.time);
+        if (d !== null && !okInt(d, 0, 30)) { warn.push(`${label} days_ago=${r && r.days_ago}`); return null; }
+        return { d, t: TIMES.includes(t) ? t : '' };
+      };
+      const byWhen = (a, b) => (a.d === null) - (b.d === null) || (b.d - a.d) || TIMES.indexOf(a.t) - TIMES.indexOf(b.t);
+
+      const fd = num(x.fever_days);
+      if (fd !== null) { if (okInt(fd, 1, 30)) out.fd = fd; else warn.push(`fever_days=${x.fever_days}`); }
+
+      out.t = [];
+      for (const r of (Array.isArray(x.temps) ? x.temps : [])) {
+        const base = readTime(r, 'temp'); if (!base) continue;
+        const temp = num(r.temp);
+        if (!(temp >= 34 && temp <= 42.5)) { warn.push(`temperature ${r.temp} is outside 34–42.5°C — please check`); continue; }
+        out.t.push({ ...base, v: Math.round(temp * 10) / 10 });
+      }
+      out.t.sort(byWhen);
+
+      out.f = [];
+      for (const r of (Array.isArray(x.fever_reducer) ? x.fever_reducer : [])) {
+        const base = readTime(r, 'fever_reducer'); if (base) out.f.push(base);
+      }
+      out.f.sort(byWhen);
+
+      for (const [k, key] of [['eating','e'],['drinking','dr'],['urine','u']]) {
+        if (x[k]) { const v = norm(x[k]); if (LEVEL.includes(v)) out[key] = v; else warn.push(`${k}=${x[k]}`); }
+      }
+      for (const [k, key] of [['vomit_count','vc'],['diarrhea_count','dc']]) {
+        const v = num(x[k]); if (v !== null) { if (okInt(v, 0, 50)) out[key] = v; else warn.push(`${k}=${x[k]}`); }
+      }
+      if (x.notes) out.n = String(x.notes).slice(0, 400);
+      out.ui = ['zh','en','ja'].includes(norm(x.ui_lang)) ? norm(x.ui_lang) : 'en';
+
+      // Date of creation is stamped by the device, not by the model.
+      const now = new Date();
+      out.ts = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') +
+        ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+      const facts = out.s.length + out.t.length + out.f.length + ['e','dr','u','vc','dc','n','od','fd'].filter(k => out[k] !== undefined).length;
+      if (!facts) return JSON.stringify({ error: 'No usable facts. Ask the user for symptoms or temperatures.' });
+
+      let msg = `Memo created: ${out.s.length} symptom(s), ${out.t.length} temperature reading(s), ${out.f.length} fever-reducer time(s). ` +
+        'Reply in one sentence: tap the memo, check each line, show it at the clinic. Do not diagnose. No phone numbers.';
+      if (warn.length) msg += ' WARNINGS (tell the user to check): ' + warn.join('; ') + '.';
+      return JSON.stringify({ result: msg, webview: { url: 'memo.html?d=' + encodeURIComponent(JSON.stringify(out)) } });
+    } catch (e) {
+      console.error(e);
+      return JSON.stringify({ error: 'sick-visit-memo error: ' + e.message });
+    }
+  };
+</script>
+</body>
+</html>
