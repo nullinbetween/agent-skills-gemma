@@ -1,33 +1,40 @@
 ---
 name: disaster-help-card
-description: Makes a Japanese help card to SHOW to shelter staff, rescuers or people nearby during a disaster or emergency in Japan (earthquake, fire, injury, danger, someone following me, person or pet trapped, need water/food/milk, lost family, cannot speak Japanese). 防災・地震・火災・救命・受傷・被跟蹤・寵物・避難所・不懂日文。Not for a planned clinic visit.
+description: Makes a Japanese ACTION card to SHOW to people nearby (staff, rescuers, neighbours) in a disaster or emergency in Japan — earthquake, fire, someone trapped, injury, can't breathe, someone following me, lost child, need shelter. Works with short broken phrases. 防災・地震・火災・救命・受傷・被跟蹤・找人・避難所。Not for a planned clinic visit.
 ---
 
-# Disaster Help Card
+# Disaster Help Card (action card)
 
-You do two things: (1) pick codes — the card already has verified Japanese for them; (2) translate the user's whole message into easy Japanese for a clearly marked "AI translation" box. Never give phone numbers.
+Step 1: translate. Step 2: decide the actions. The card shows pre-written Japanese for actions and notes, plus your translation in a box marked "AI translation". Never give phone numbers.
+
+## Step 1 — translate (`yasashii`)
+Translate the user's WHOLE message into easy Japanese:
+- Broken phrases stay broken. Do NOT add who, where or what the user did not say. 「地震 狗 屋子裡 救命」 → 地震（じしん）。犬（いぬ）。家（いえ）の 中（なか）。たすけて ください。
+- Copy numbers, ages, floors, colours, names exactly.
+- Short sentences, です/ます, no keigo, a space between words, reading after every kanji word: 火事（かじ）.
+
+## Step 2 — actions (max 3, most urgent first)
+Pick ONLY from clear signals:
+- `ambulance`: not breathing, no response, unconscious, heavy bleeding
+- `fire`: fire, smoke
+- `rescue`: a person is trapped / pinned / can't get out
+- `protect`: someone is following, attacking or threatening the user
+- `first_aid`: injured, bleeding (not heavy)
+- `find_person`: can't find someone, separated
+- `shelter`: needs to go to a shelter
+- `listen`: anything else or unclear. Better `listen` than a wrong action.
+
+Notes (not actions): `allergy` (+ `allergens`: `egg`,`milk`,`wheat`,`shrimp`,`crab`,`buckwheat`,`peanut`,`walnut`,`soy`,`sesame`,`fish`), `pregnant`, `mobility` (can't walk), `no_japanese` (+ `interpreter` ONLY if the user names their language: `english`,`mandarin`,`cantonese`,`korean`,`vietnamese`,`nepali`,`tagalog`,`thai`,`indonesian`,`spanish`,`portuguese`,`french`).
 
 ## Call `run_js`
 - script name: `index.html`
-- data: JSON string:
-  - `needs`: codes that match what the user said:
-    `emergency` (life-threatening: not breathing, unconscious, heavy bleeding), `fire`, `danger` (followed, attacked, unsafe person), `trapped_person` (a person is still inside / stuck), `injured`, `family_injured` (someone with me is hurt), `trapped_pet` (a pet is still inside / stuck), `sick`, `pregnant`, `mobility`, `medicine`, `allergy`, `no_pork`, `vegetarian`, `water`, `food`, `with_child`, `with_pet`, `formula`, `diapers`, `lost_family`, `no_japanese`, `shelter`, `toilet`, `charging`, `other`
-  - `allergens` (only with `allergy`): `egg`, `milk`, `wheat`, `shrimp`, `crab`, `buckwheat`, `peanut`, `walnut`, `soy`, `sesame`, `fish`
-  - `interpreter`: ONLY if the user says which language they speak: `english`, `mandarin`, `cantonese`, `korean`, `vietnamese`, `nepali`, `tagalog`, `thai`, `indonesian`, `spanish`, `portuguese`, `french`
-  - `original`: the user's message, copied exactly
-  - `yasashii`: the user's WHOLE message translated into easy Japanese (やさしい日本語), max 3 short sentences
-  - `unmatched`: short phrases (user's own words) for anything that fits no code
-  - `ui_lang`: `zh` (Chinese, incl. Chinese mixed with English) or `en` (English). Use `ja` only if the user wrote in Japanese.
+- data: JSON string with `actions`, `notes`, `allergens`, `interpreter`, `yasashii`, `original` (the user's message copied exactly), `ui_lang` (`zh` for Chinese incl. Cantonese and Chinese mixed with English; `en` for English; `ja` only if written in Japanese)
 
-Easy Japanese rules for `yasashii`: short sentences; every sentence ends in です or ます; no keigo; use 〜て ください, not 〜ましょう; put a space between words; after every kanji word add its reading in full-width brackets, like 火事（かじ）. Translate only what the user said. Add nothing.
-
-Example: 「家裡著火了 我的狗還在裡面」 →
-`{"needs":["fire","trapped_pet"],"original":"家裡著火了 我的狗還在裡面","yasashii":"家（いえ）が 火事（かじ）です。犬（いぬ）が まだ 家（いえ）の 中（なか）に います。","ui_lang":"zh"}`
+Example: 「火 火 三樓 老人 走唔到」 →
+`{"actions":["fire","rescue"],"notes":["mobility"],"yasashii":"火事（かじ）。3階（さんがい）。お年寄（としよ）り。歩（ある）けません。","original":"火 火 三樓 老人 走唔到","ui_lang":"zh"}`
 
 ## Rules
-- Supported languages: Traditional Chinese and English only. If the user writes in another language, still make it with `"ui_lang":"en"` and say in English that only Traditional Chinese and English are supported.
-- If something fits no code, put it in `unmatched` and add `other`. Never pick a "closest" wrong code.
-- "I can't speak Japanese" alone → `no_japanese` without `interpreter`.
-- If the user gives no details, do not call the tool; ask in their language what help they need.
-- If the user adds or corrects something later, call `run_js` again with the FULL list: previous codes + new ones, minus anything the user said is wrong; translate the new message too.
-- After the tool returns, reply in 1 sentence in the user's language: tap the card, check it, show it to the people around you.
+- Supported languages: Traditional Chinese (incl. Cantonese) and English. Other languages: still make the card with `"ui_lang":"en"` and say only Chinese and English are supported.
+- If the user gives no details at all, do not call the tool; ask what happened.
+- If the user adds or corrects something, call again with the full updated actions and a translation of everything said so far.
+- After the tool returns, reply in 1 sentence in the user's language: tap the card and show it to the people around you.

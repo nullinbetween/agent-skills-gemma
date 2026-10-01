@@ -3,181 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>助けが必要です</title>
+<title>たすけて ください</title>
 <style>
-  :root { --moon:#FBFBFE; --moon-2:#EEF0F7; --ink:#3D4050; --ink-soft:#878BA1; --ink-faint:#B4B7C8; --line:rgba(150,156,186,.24);
-    --lav:#D0CAE9; --lav-deep:#9189C0; --sky:#CBDAEE; --sky-deep:#7B99C0; --rose:#EAD6DB; --rose-deep:#BE96A0; --gold:#E9DEC2; --gold-deep:#B49A63;
-    --red:#C0392B; --red-soft:#F6D5D1; --shadow-card:0 5px 24px rgba(130,135,170,.08);
-    --sans: Arial, "Hiragino Sans", "Noto Sans JP", "PingFang TC", sans-serif; --num: "Inter", Arial, "Helvetica Neue", sans-serif; }
+  /* Design tokens and layout follow Digital Omamori Emergency mode (red head bar + white action card with red left rule). */
+  :root { --ink:#3D4050; --ink-soft:#878BA1; --ink-faint:#B4B7C8; --line:rgba(150,156,186,.24);
+    --lav:#D0CAE9; --lav-deep:#9189C0; --sky:#CBDAEE; --sky-deep:#7B99C0; --rose:#EAD6DB; --rose-deep:#BE96A0; --platinum:#C7CCDA;
+    --red:#C0392B; --sans: Arial, "Hiragino Sans", "Noto Sans JP", "PingFang TC", sans-serif; --num: "Inter", Arial, "Helvetica Neue", sans-serif; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: linear-gradient(var(--moon), var(--moon-2)); min-height: 100vh; color: var(--ink); font-family: var(--sans); padding: 16px 14px 24px; }
+  body { background: #F4EEF0; color: var(--ink); font-family: var(--sans); min-height: 100vh; }
   button { font-family: inherit; cursor: pointer; }
-  .brand { text-align: center; font-family: var(--num); font-weight: 600; font-size: 17px; letter-spacing: 2px;
-    background: linear-gradient(#5A5E72, #9AA0B6 55%, #D5D9E6); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .brand i { font-style: normal; background: linear-gradient(var(--lav-deep), var(--lav)); -webkit-background-clip: text; background-clip: text; }
-  .card { background: rgba(255,255,255,.66); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-card); }
-  .notice { margin-top: 12px; background: var(--gold); border-radius: 12px; padding: 10px 36px 10px 12px; font-size: 13px; line-height: 1.5; position: relative; color: #6b5a33; }
-  .notice b { display: block; margin-bottom: 2px; }
-  .notice .x { position: absolute; top: 6px; right: 6px; }
-  .sos { margin-top: 12px; background: var(--red); color: #fff; border-radius: 12px; box-shadow: 0 4px 14px rgba(192,57,43,.35); padding: 16px; text-align: center; }
-  .sos .ja { font-size: 21px; font-weight: 700; line-height: 1.5; }
-  .sos .sub { font-size: 12.5px; opacity: .88; margin-top: 4px; }
-  .list { margin-top: 14px; padding: 2px 14px; }
-  .item { display: flex; gap: 12px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--line); }
-  .item:last-child { border-bottom: 0; }
-  .ico { flex: 0 0 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 21px; }
-  .t-red .ico { background: var(--red-soft); } .t-rose .ico { background: var(--rose); } .t-gold .ico { background: var(--gold); }
-  .t-lav .ico { background: var(--lav); } .t-sky .ico { background: var(--sky); }
-  .body { flex: 1; min-width: 0; }
-  .num { font-family: var(--num); font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--ink-faint); }
-  .item .ja { font-size: 21px; font-weight: 700; line-height: 1.5; }
-  .item .ja b { display: inline-block; background: var(--rose); color: #8a4a58; border-radius: 8px; padding: 0 8px; margin-top: 4px; }
-  .item .tr { font-size: 13px; color: var(--ink-soft); margin-top: 4px; line-height: 1.5; }
-  .item .own { font-size: 13px; color: var(--ink); background: var(--moon-2); border-radius: 8px; padding: 4px 8px; margin-top: 6px; }
-  .x { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; border: 0; background: transparent; color: var(--ink-faint); font-size: 15px; line-height: 26px; }
-  .empty { padding: 18px 0; text-align: center; color: var(--ink-soft); font-size: 14px; }
-  .row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
-  .btn { padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: 999px; border: 0; background: var(--lav); color: #4A4470; }
-  .btn.ghost { background: transparent; border: 1px solid var(--lav-deep); color: #4A4470; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 7px 12px; font-size: 14px; }
-  .chip.on { background: var(--rose); border-color: var(--rose-deep); }
-  .aibox { margin-top: 14px; border: 1.5px dashed var(--sky-deep); border-radius: 16px; padding: 12px 14px; background: rgba(203,218,238,.25); }
-  .aihead { font-size: 13px; font-weight: 700; color: var(--sky-deep); }
-  .aihead span { display: block; font-weight: 400; font-size: 11.5px; color: var(--ink-soft); }
-  .aija { font-size: 20px; font-weight: 700; line-height: 1.6; margin-top: 8px; word-break: keep-all; overflow-wrap: anywhere; }
-  .aitr { font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
-  .aiorig { font-size: 13.5px; background: #fff; border-radius: 10px; padding: 6px 10px; margin-top: 6px; }
-  .aiorig b { color: var(--ink-soft); font-weight: 600; margin-right: 6px; }
-  .big .aija { font-size: 27px; }
-  .ja { word-break: keep-all; overflow-wrap: anywhere; }  /* 分かち書き: break lines only at the spaces */
+  .head { background: var(--red); color: #fff; padding: 14px 18px; }
+  .head .t { font-weight: 700; font-size: 19px; letter-spacing: 1px; line-height: 1.5; }
+  .head .s { font-size: 12.5px; opacity: .9; margin-top: 2px; }
+  .body { padding: 16px 14px 24px; max-width: 560px; margin: 0 auto; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #5A5E72; background: #E8E2E4; padding: 5px 12px; border-radius: 20px; margin-bottom: 12px; }
+  .card { background: #fff; border: 2px solid var(--rose-deep); border-left: 8px solid var(--red); border-radius: 14px; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+  .lead { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #A33B4E; margin-bottom: 8px; }
+  .lead span { letter-spacing: .5px; font-weight: 400; color: var(--ink-soft); margin-left: 6px; }
+  .act { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; }
+  .act + .act { border-top: 1px dashed var(--line); }
+  .act .ico { flex: 0 0 auto; font-size: 22px; line-height: 1.3; }
+  .act .txt { flex: 1; min-width: 0; }
+  .act .ja { font-weight: 700; font-size: 19px; line-height: 1.5; color: #23252F; }
+  .act.first .ja { font-size: 26px; }
+  .act.first .ico { font-size: 30px; }
+  .act .tr { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  .x { flex: 0 0 auto; width: 26px; height: 26px; border: 0; background: transparent; color: var(--ink-faint); font-size: 15px; }
+  .box { margin-top: 12px; padding: 10px 12px; border-radius: 10px; }
+  .box .bl { font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .notes { background: #F3F0F7; border: 1px solid var(--platinum); }
+  .notes .bl { color: #7C7FA0; }
+  .note { font-size: 16px; font-weight: 700; line-height: 1.5; padding: 3px 0; }
+  .note .tr { display: block; font-size: 12.5px; font-weight: 400; color: var(--ink-soft); }
+  .note b { background: var(--rose); color: #8a4a58; border-radius: 6px; padding: 0 6px; }
+  .why { background: rgba(203,218,238,.3); border: 1.5px dashed var(--sky-deep); }
+  .why .bl { color: var(--sky-deep); }
+  .why .bl span { display: block; font-weight: 400; letter-spacing: .3px; color: var(--ink-soft); font-size: 11px; }
+  .why .yj { font-size: 18px; font-weight: 700; line-height: 1.6; margin-top: 4px; }
+  .why .aitr { font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
+  .why .orig { font-size: 13.5px; background: #fff; border-radius: 8px; padding: 6px 9px; margin-top: 6px; }
+  .why .orig b { color: var(--ink-soft); font-weight: 600; margin-right: 6px; }
+  .ja, .yj, .note { word-break: keep-all; overflow-wrap: anywhere; }  /* 分かち書き: break lines only at the spaces */
+  ruby { ruby-align: center; }
   rt { font-size: .5em; font-weight: 500; color: var(--ink-soft); }
-  .sos rt { color: rgba(255,255,255,.85); }
+  .head rt { color: rgba(255,255,255,.85); }
+  .row { display: flex; justify-content: center; margin-top: 14px; }
+  .btn { padding: 10px 22px; font-size: 13px; font-weight: 600; border-radius: 999px; border: 0; background: var(--lav); color: #4A4470; }
   .foot { font-size: 11px; color: var(--ink-faint); line-height: 1.6; text-align: center; margin-top: 14px; }
-  .big .item .ja { font-size: 28px; } .big .sos .ja { font-size: 27px; }
+  .big .act .ja { font-size: 24px; } .big .act.first .ja { font-size: 32px; } .big .why .yj { font-size: 24px; } .big .note { font-size: 20px; }
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
-  // ── Single source of truth for all card text. Japanese must be proofread by a human. ──
-  const HEAD = { ja: 'すみません。たすけて ください。<br>この 画面（がめん）を 読（よ）んで ください。',
-    zh: '不好意思，我需要幫助。請看這個畫面。', en: 'Excuse me, I need help. Please read this screen.' };
-
-  // code: [icon, tone, Japanese, 中文, English, short label 中文, short label English]
-  const P = {
-    fire:        ['🔥','red','火事（かじ）です。','發生火災了。','There is a fire.','火災','Fire'],
-    emergency:   ['🚑','red','救急車（きゅうきゅうしゃ）を 呼（よ）んで ください。','請幫我叫救護車。','Please call an ambulance.','叫救護車','Ambulance'],
-    danger:      ['🆘','red','知（し）らない 人（ひと）が ついて きます。こわいです。たすけて ください。','有不認識的人跟著我，我很害怕，請幫幫我。','A stranger is following me. I am scared. Please help.','被跟蹤／有危險','Followed / unsafe'],
-    trapped_person:['🏚️','red','建物（たてもの）の 中（なか）に 人（ひと）が います。たすけて ください。','建築物裡面還有人，請救救他們。','A person is still inside the building. Please help.','有人困在裡面','Person trapped'],
-    injured:     ['🩹','rose','けがを して います。手当（てあ）てを して ください。','我受傷了，請幫我處理傷口。','I am injured. Please give first aid.','我受傷','I am injured'],
-    family_injured:['🤕','rose','家族（かぞく）が けがを して います。たすけて ください。','我的家人受傷了，請幫忙。','My family member is injured. Please help.','家人受傷','Family injured'],
-    trapped_pet: ['🐾','rose','建物（たてもの）の 中（なか）に ペットが います。','建築物裡面還有我的寵物。','My pet is still inside the building.','寵物困在裡面','Pet trapped'],
-    sick:        ['🤒','rose','体（からだ）の 調子（ちょうし）が 悪（わる）いです。','我身體不舒服。','I feel sick.','身體不舒服','Feel sick'],
-    pregnant:    ['🤰','rose','おなかに 赤（あか）ちゃんが います。','我懷孕了。','I am pregnant.','懷孕','Pregnant'],
-    mobility:    ['♿','rose','ひとりで 歩（ある）けません。手伝（てつだ）って ください。','我沒辦法自己走，請幫我。','I cannot walk on my own. Please help me.','移動需要協助','Need help moving'],
-    medicine:    ['💊','rose','いつも 飲（の）む 薬（くすり）を ください。','我需要平常在吃的藥。','I need my regular medicine.','平常吃的藥','Regular medicine'],
-    allergy:     ['⚠️','gold','食（た）べものの アレルギーが あります。','我有食物過敏。','I have a food allergy.','食物過敏','Food allergy'],
-    no_pork:     ['🚫','gold','豚肉（ぶたにく）は 食（た）べられません。','我不能吃豬肉。','I cannot eat pork.','不吃豬肉','No pork'],
-    vegetarian:  ['🥦','gold','肉（にく）と 魚（さかな）は 食（た）べられません。','我不吃肉和魚。','I do not eat meat or fish.','不吃肉和魚','Vegetarian'],
-    water:       ['💧','gold','飲（の）む 水（みず）を ください。','我需要飲用水。','I need drinking water.','飲用水','Water'],
-    food:        ['🍙','gold','食（た）べものを ください。','我需要食物。','I need food.','食物','Food'],
-    with_child:  ['👶','lav','小（ちい）さい 子（こ）どもと いっしょです。','我帶著小孩。','I am with a small child.','帶著小孩','With a child'],
-    with_pet:    ['🐕','lav','ペットと いっしょです。','我帶著寵物。','I am with my pet.','帶著寵物','With a pet'],
-    formula:     ['🍼','lav','赤（あか）ちゃんの ミルクを ください。','我需要嬰兒奶粉。','I need baby formula.','嬰兒奶粉','Baby formula'],
-    diapers:     ['🧷','lav','おむつを ください。','我需要尿布。','I need diapers.','尿布','Diapers'],
-    lost_family: ['👨‍👩‍👧','lav','家族（かぞく）と はなれました。家族（かぞく）を さがして います。','我和家人走散了，正在找家人。','I got separated from my family. I am looking for them.','和家人走散','Lost family'],
-    no_japanese: ['🗣️','sky','日本語（にほんご）が あまり わかりません。<br>やさしい 日本語（にほんご）で ゆっくり 話（はな）して ください。','我不太會說日文，請用簡單的日文慢慢說。','I do not speak much Japanese. Please speak slowly in simple Japanese.','不太會日文','Little Japanese'],
-    other:       ['💬','sky','ほかにも こまって いる ことが あります。話（はなし）を 聞（き）いて ください。','我還有其他困難，請聽我說。','I have another problem. Please listen to me.','其他困難','Something else'],
-    shelter:     ['🏫','sky','避難所（ひなんじょ）は どこですか。','避難所在哪裡？','Where is the evacuation shelter?','避難所在哪','Shelter'],
-    toilet:      ['🚻','sky','トイレは どこですか。','廁所在哪裡？','Where is the toilet?','廁所在哪','Toilet'],
-    charging:    ['🔋','sky','スマホを 充電（じゅうでん）したいです。','我想幫手機充電。','I want to charge my phone.','手機充電','Charge phone'],
+  // ── Pre-written text. Japanese = やさしい日本語 in Omamori notation 漢字（かな）; proofread by a human. ──
+  const HEAD = { ja: 'すみません。たすけて ください。', zh: '不好意思，請幫幫我。', en: 'Excuse me, please help me.' };
+  // action: [icon, Japanese, 中文, English]
+  const A = {
+    ambulance:   ['🚑','救急車（きゅうきゅうしゃ）を 呼（よ）んで ください。','請叫救護車。','Please call an ambulance.'],
+    fire:        ['🔥','火事（かじ）です。','發生火災了。','There is a fire.'],
+    rescue:      ['🏚️','中（なか）に 人（ひと）が います。たすけて ください。','裡面有人，請救救他們。','Someone is inside. Please help them.'],
+    protect:     ['🆘','知（し）らない 人（ひと）が ついて きます。そばに いて ください。','有陌生人跟著我，請留在我身邊。','A stranger is following me. Please stay with me.'],
+    first_aid:   ['🩹','けがを して います。手当（てあ）てを して ください。','有人受傷了，請幫忙處理傷口。','Someone is injured. Please give first aid.'],
+    find_person: ['🔎','人（ひと）を 探（さが）して います。','我在找人。','I am looking for someone.'],
+    shelter:     ['🏫','避難所（ひなんじょ）に つれて 行（い）って ください。','請帶我去避難所。','Please take me to an evacuation shelter.'],
+    listen:      ['💬','たすけて ください。話（はなし）を 聞（き）いて ください。','請幫幫我，請聽我說。','Please help me. Please listen to me.'],
   };
-  const ORDER = ['fire','emergency','danger','trapped_person','injured','family_injured','trapped_pet','sick','pregnant','mobility','medicine',
-    'allergy','no_pork','vegetarian','water','food','with_child','with_pet','formula','diapers','lost_family','no_japanese','other','shelter','toilet','charging'];
-
+  const ORDER = Object.keys(A);
+  // note: [Japanese, 中文, English]
+  const N = {
+    allergy:     ['食（た）べものの アレルギーが あります。','我有食物過敏。','I have a food allergy.'],
+    pregnant:    ['おなかに 赤（あか）ちゃんが います。','我懷孕了。','I am pregnant.'],
+    mobility:    ['ひとりで 歩（ある）けません。','沒辦法自己走路。','Cannot walk alone.'],
+    no_japanese: ['日本語（にほんご）が あまり わかりません。やさしい 日本語（にほんご）で ゆっくり 話（はな）して ください。','我不太懂日文，請用簡單的日文慢慢說。','I do not understand much Japanese. Please speak slowly in simple Japanese.'],
+  };
   const ALG = { egg:['卵（たまご）','蛋','egg'], milk:['牛乳（ぎゅうにゅう）・乳製品（にゅうせいひん）','牛奶／乳製品','milk / dairy'], wheat:['小麦（こむぎ）','小麥','wheat'],
-    shrimp:['えび','蝦','shrimp'], crab:['かに','蟹','crab'], buckwheat:['そば','蕎麥','buckwheat'],
-    peanut:['落花生（らっかせい）（ピーナッツ）','花生','peanut'], walnut:['くるみ','核桃','walnut'], soy:['大豆（だいず）','大豆','soy'],
-    sesame:['ごま','芝麻','sesame'], fish:['魚（さかな）','魚','fish'] };
-
+    shrimp:['えび','蝦','shrimp'], crab:['かに','蟹','crab'], buckwheat:['そば','蕎麥','buckwheat'], peanut:['落花生（らっかせい）（ピーナッツ）','花生','peanut'],
+    walnut:['くるみ','核桃','walnut'], soy:['大豆（だいず）','大豆','soy'], sesame:['ごま','芝麻','sesame'], fish:['魚（さかな）','魚','fish'] };
   const LANG = { english:['英語（えいご）','英文','English'], mandarin:['中国語（ちゅうごくご）','普通話','Mandarin'], cantonese:['広東語（かんとんご）','廣東話','Cantonese'],
     korean:['韓国語（かんこくご）','韓文','Korean'], vietnamese:['ベトナム語（ご）','越南語','Vietnamese'], nepali:['ネパール語（ご）','尼泊爾語','Nepali'],
     tagalog:['タガログ語（ご）','他加祿語','Tagalog'], thai:['タイ語（ご）','泰文','Thai'], indonesian:['インドネシア語（ご）','印尼文','Indonesian'],
     spanish:['スペイン語（ご）','西班牙文','Spanish'], portuguese:['ポルトガル語（ご）','葡萄牙文','Portuguese'], french:['フランス語（ご）','法文','French'] };
-
-  // UI words in the user's language (fallback: English)
   const T = {
-    zh: { ai:'AI 翻譯（可能有錯，請對照下面的原文）', orig:'原文', notOn:'這些內容卡片上沒有。請直接告訴對方，或在對話框補充說明：', none:'（沒有項目）' },
-    en: { ai:'AI translation (may contain mistakes; check against the original below)', orig:'Original', notOn:'These are NOT on the card. Tell people directly, or add more in the chat box:', none:'(no items)' },
-    ja: { ai:'', orig:'原文', notOn:'次の内容はカードにありません。直接伝えるか、チャット欄で追加してください：', none:'（項目がありません）' },
+    zh: { lead:'先做這件事', notes:'請注意', why:'發生了什麼事', ai:'AI 翻譯（可能有錯，請對照下面的原文）', orig:'原文', chip:'手機內離線製作' },
+    en: { lead:'Do this first', notes:'Please note', why:'What happened', ai:'AI translation (may contain mistakes; check against the original below)', orig:'Original', chip:'Made on this phone, offline' },
+    ja: { lead:'', notes:'', why:'', ai:'', orig:'原文', chip:'' },
   };
 
   const qs = new URLSearchParams(location.search);
   const list = (k) => (qs.get(k) || '').split(',').filter(Boolean);
   const S = {
-    needs: new Set(list('n').filter(k => P[k])),
-    allergens: new Set(list('a').filter(k => ALG[k])),
+    actions: list('a').filter(k => A[k]).sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b)).slice(0, 3),
+    notes: list('n').filter(k => N[k]),
+    allergens: list('al').filter(k => ALG[k]),
     interp: LANG[qs.get('i')] ? qs.get('i') : '',
-    ui: ['zh','en','ja'].includes(qs.get('ui')) ? qs.get('ui') : 'en',
-    unmatched: (() => { try { const u = JSON.parse(qs.get('u') || '[]'); return Array.isArray(u) ? u : []; } catch (e) { return []; } })(),
     yasashii: qs.get('y') || '', original: qs.get('o') || '',
-    showNotice: true, big: false,
+    ui: ['zh','en','ja'].includes(qs.get('ui')) ? qs.get('ui') : 'en',
+    big: false,
   };
+  if (!S.actions.length) S.actions = ['listen'];
   const t = T[S.ui];
+  const I = S.ui === 'zh' ? 1 : 2;
   const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
-  const tr = (r) => S.ui === 'zh' ? r[3] : S.ui === 'en' ? r[4] : '';
-
-  // Omamori notation 漢字（かな） → <ruby> so staff read clean text and the reading sits above the kanji
   const ruby = (html) => html.replace(/([々〆一-龯]+)（([ぁ-ゖー]+)）/g, '<ruby>$1<rt>$2</rt></ruby>');
+  const tr = (arr, idx) => S.ui === 'ja' ? '' : arr[idx];
 
   function render() {
-    let h = `<div class="brand">Help <i>✦</i> Card</div>`;
-    if (S.unmatched.length && S.showNotice) {
-      h += `<div class="notice"><b>${t.notOn}</b>${S.unmatched.map(u => '「' + esc(u) + '」').join('　')}<button class="x" data-act="notice" aria-label="close">✕</button></div>`;
-    }
-    h += `<div class="sos"><div class="ja">${HEAD.ja}</div>${S.ui !== 'ja' ? `<div class="sub">${HEAD[S.ui]}</div>` : ''}</div>`;
-    h += `<div class="card list">`;
-    const items = ORDER.filter(k => S.needs.has(k));
-    if (!items.length) h += `<div class="empty">${t.none}</div>`;
-    items.forEach((k, idx) => {
-      const r = P[k];
-      let ja = r[2], tx = tr(r), extra = '';
-      const al = [...S.allergens];
-      if (k === 'allergy' && al.length) {
-        ja += `<br>これは 食（た）べられません：<br><b>${al.map(a => ALG[a][0]).join('、')}</b>`;
-        if (tx) tx += ' ' + (S.ui === 'zh' ? '不能吃：' + al.map(a => ALG[a][1]).join('、') : 'Cannot eat: ' + al.map(a => ALG[a][2]).join(', '));
-      }
-      if (k === 'no_japanese' && S.interp) {
-        ja += `<br><b>${LANG[S.interp][0]}</b>が 話（はな）せる 人（ひと）は いますか。`;
-        if (tx) tx += ' ' + (S.ui === 'zh' ? `有會說${LANG[S.interp][1]}的人嗎？` : `Is there anyone who speaks ${LANG[S.interp][2]}?`);
-      }
-      if (k === 'other' && S.unmatched.length && !S.yasashii) extra = `<div class="own">本人（ほんにん）の ことば：${S.unmatched.map(u => '「' + esc(u) + '」').join(' ')}</div>`;
-      h += `<div class="item t-${r[1]}"><div class="ico">${r[0]}</div><div class="body"><div class="num">${String(idx + 1).padStart(2, '0')}</div>` +
-        `<div class="ja">${ja}</div>${tx ? `<div class="tr">${tx}</div>` : ''}${extra}</div>` +
-        `<button class="x" data-act="del" data-k="${k}" aria-label="remove">✕</button></div>`;
+    let h = `<div class="head"><div class="t">⚠ ${HEAD.ja}</div>${S.ui !== 'ja' ? `<div class="s">${HEAD[S.ui]}</div>` : ''}</div><div class="body">`;
+    h += `<div class="chip">● 端末内（たんまつない）・オフライン${t.chip ? ' · ' + t.chip : ''}</div>`;
+    h += `<div class="card"><div class="lead">まず これを して ください${t.lead ? `<span>${t.lead}</span>` : ''}</div>`;
+    S.actions.forEach((k, i) => {
+      const r = A[k];
+      h += `<div class="act ${i === 0 ? 'first' : ''}"><div class="ico">${r[0]}</div><div class="txt"><div class="ja">${r[1]}</div>` +
+        `${tr(r, S.ui === 'zh' ? 2 : 3) ? `<div class="tr">${tr(r, S.ui === 'zh' ? 2 : 3)}</div>` : ''}</div>` +
+        (S.actions.length > 1 ? `<button class="x" data-act="del" data-k="${k}" aria-label="remove">✕</button>` : '') + `</div>`;
     });
-    h += `</div>`;
-    if (S.yasashii) {
-      h += `<div class="aibox"><div class="aihead">本人（ほんにん）の 話（はなし）・AIの 翻訳（ほんやく）<span>まちがいが あるかも しれません</span></div>` +
-        `<div class="aija">${esc(S.yasashii)}</div>` +
-        (t.ai ? `<div class="aitr">${t.ai}</div>` : '') +
-        (S.original ? `<div class="aiorig"><b>${t.orig}</b>${esc(S.original)}</div>` : '') + `</div>`;
+    if (S.notes.length) {
+      h += `<div class="box notes"><div class="bl">気（き）を つけて ください${t.notes ? ' · ' + t.notes : ''}</div>`;
+      for (const k of S.notes) {
+        let ja = N[k][0], x = tr(N[k], I);
+        if (k === 'allergy' && S.allergens.length) {
+          ja += ` <b>${S.allergens.map(a => ALG[a][0]).join('、')}</b>`;
+          if (x) x += ' ' + S.allergens.map(a => ALG[a][I]).join(S.ui === 'zh' ? '、' : ', ');
+        }
+        if (k === 'no_japanese' && S.interp) {
+          ja += ` <b>${LANG[S.interp][0]}</b>が 話（はな）せる 人（ひと）は いますか。`;
+          if (x) x += S.ui === 'zh' ? ` 有會說${LANG[S.interp][1]}的人嗎？` : ` Is there anyone who speaks ${LANG[S.interp][2]}?`;
+        }
+        h += `<div class="note">${ja}${x ? `<span class="tr">${x}</span>` : ''}</div>`;
+      }
+      h += `</div>`;
     }
-    h += `<div class="row"><button class="btn" data-act="big" aria-label="bigger text">A ＋</button></div>`;
-    h += `<div class="foot">このカードは端末内（オフライン）で作成されました。<br>項目の日本語は事前に確認済みの定型文です。点線の枠だけがAIの翻訳です。<br>Generated on-device, offline. Card items are pre-written Japanese; only the dashed box is an AI translation.<br>對照語言 Check language：繁體中文 / English</div>`;
+    if (S.yasashii) {
+      h += `<div class="box why"><div class="bl">なにが あったか${t.why ? ' · ' + t.why : ''}<span>AIの 翻訳（ほんやく）です。まちがいが あるかも しれません。</span></div>` +
+        `<div class="yj">${esc(S.yasashii)}</div>` + (t.ai ? `<div class="aitr">${t.ai}</div>` : '') +
+        (S.original ? `<div class="orig"><b>${t.orig}</b>${esc(S.original)}</div>` : '') + `</div>`;
+    }
+    h += `</div><div class="row"><button class="btn" data-act="big" aria-label="bigger text">A ＋</button></div>`;
+    h += `<div class="foot">「まず これを して ください」と「気を つけて ください」は 事前（じぜん）に 確認（かくにん）した 定型文（ていけいぶん）です。<br>「なにが あったか」だけが AIの 翻訳です。<br>Actions and notes are pre-written Japanese. Only "What happened" is an AI translation.<br>對照語言 Check language：繁體中文 / English</div></div>`;
     document.body.classList.toggle('big', S.big);
     document.getElementById('root').innerHTML = ruby(h);
   }
-
   document.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-act]'); if (!b) return;
-    const k = b.dataset.k;
-    switch (b.dataset.act) {
-      case 'del': S.needs.delete(k); if (k === 'allergy') S.allergens.clear(); if (k === 'no_japanese') S.interp = ''; break;
-      case 'big': S.big = !S.big; break;
-      case 'notice': S.showNotice = false; break;
-    }
+    if (b.dataset.act === 'del') { S.actions = S.actions.filter(a => a !== b.dataset.k); if (!S.actions.length) S.actions = ['listen']; }
+    if (b.dataset.act === 'big') S.big = !S.big;
     render();
   });
   render();

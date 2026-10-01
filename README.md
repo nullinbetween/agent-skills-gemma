@@ -32,13 +32,17 @@ Everything runs offline in the app's webview — no network, no API key. Offline
 
 `.nojekyll` is required: without it GitHub Pages runs Jekyll and turns `SKILL.md` (it has front matter) into HTML.
 
-## AI translation box (disaster-help-card)
+## disaster-help-card = translate first, then an action card
 
-Card items use pre-written Japanese. In addition, the model translates the user's whole message into easy Japanese (やさしい日本語). It is shown in a separate dashed box, labelled as an AI translation that may contain mistakes, with the user's original message under it so the user can check.
+Modelled on Digital Omamori's Emergency mode: in a crisis the first card is enough to act.
+
+1. **Translate**: the model turns the user's message — often broken phrases like 「地震 狗 屋子裡 救命」 — into easy Japanese (やさしい日本語). Fragments stay fragments; nothing is added.
+2. **Act**: the model picks up to 3 actions from 8 (ambulance, fire, rescue, protect, first aid, find person, shelter, listen) using clear signals only; unclear → `listen`. JS re-sorts them by a fixed urgency order.
+3. **Card**: actions (largest first) and notes (allergy, pregnant, can't walk, little Japanese) are pre-written Japanese with a Chinese/English line; the translation sits in a dashed "What happened — AI translation" box with the original message.
 
 ## Limits
 
 - Not a medical or emergency service. The skills only make cards to show to people on site; they never suggest phone numbers (a small model can mistype them).
 - `sick-visit-memo` is a parent's record, not a diagnosis.
-- ✕ removes an item from the card. To add something, the user just says it again in the chat, in their own words; the model re-issues the card with the full list. Anything the model could not map is shown to the user, never silently dropped.
+- ✕ removes a wrong action. To add something, the user just says it again in the chat; the model re-issues the card. Anything the model could not map is shown to the user, never silently dropped.
 - Japanese phrase list is a first version; additions welcome.
