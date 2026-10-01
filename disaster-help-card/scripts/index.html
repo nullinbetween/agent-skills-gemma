@@ -48,9 +48,10 @@
       const q = new URLSearchParams({ n: needs.join(','), a: allergens.join(','), i: interpreter, ui });
       if (unmatched.length) q.set('u', JSON.stringify(unmatched).slice(0, 600));
 
-      let msg = needs.length
-        ? `Card created: ${needs.join(', ')}` + (allergens.length ? ` | allergens: ${allergens.join(', ')}` : '') + (interpreter ? ` | interpreter: ${interpreter}` : '')
-        : 'Empty card opened as a checklist; the user will tick items themselves';
+      if (!needs.length) {
+        return JSON.stringify({ error: 'No needs given. Do not make a card. Ask the user, in their own language, what help they need.' });
+      }
+      let msg = `Card created: ${needs.join(', ')}` + (allergens.length ? ` | allergens: ${allergens.join(', ')}` : '') + (interpreter ? ` | interpreter: ${interpreter}` : '');
       if (unmatched.length) msg += ` | shown to user as not on card: ${unmatched.join(' / ')}`;
       msg += '. Reply in one sentence: tap the card, check it, show it to people nearby. No phone numbers. No Japanese.';
 

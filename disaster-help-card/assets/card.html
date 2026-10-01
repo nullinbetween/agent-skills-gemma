@@ -39,8 +39,6 @@
   .row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
   .btn { padding: 10px 18px; font-size: 13px; font-weight: 600; border-radius: 999px; border: 0; background: var(--lav); color: #4A4470; }
   .btn.ghost { background: transparent; border: 1px solid var(--lav-deep); color: #4A4470; }
-  .panel { margin-top: 12px; padding: 12px; }
-  .panel h3 { font-size: 12px; color: var(--ink-soft); font-weight: 600; margin: 10px 2px 6px; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 7px 12px; font-size: 14px; }
   .chip.on { background: var(--rose); border-color: var(--rose-deep); }
@@ -92,11 +90,11 @@
     tagalog:['タガログ語','他加祿語','Tagalog'], thai:['タイ語','泰文','Thai'], indonesian:['インドネシア語','印尼文','Indonesian'],
     spanish:['スペイン語','西班牙文','Spanish'], portuguese:['ポルトガル語','葡萄牙文','Portuguese'], french:['フランス語','法文','French'] };
 
-  // UI words in the user's language
+  // UI words in the user's language (fallback: English)
   const T = {
-    zh: { notOn:'這些內容卡片上沒有，請直接告訴對方，或用「＋ 加項目」補上：', add:'＋ 加項目', close:'完成', big:'放大字體', pick:'請點選你需要的項目', alg:'過敏原', lang:'我會說的語言' },
-    en: { notOn:'These are NOT on the card. Tell people directly, or use "+ Add":', add:'+ Add', close:'Done', big:'Bigger text', pick:'Tap what you need', alg:'Allergens', lang:'Language I speak' },
-    ja: { notOn:'次の内容はカードにありません。直接伝えるか「＋ 追加」で足してください：', add:'＋ 追加', close:'完了', big:'文字を大きく', pick:'必要なものを選んでください', alg:'アレルギー', lang:'話せる言語' },
+    zh: { notOn:'這些內容卡片上沒有。請直接告訴對方，或在對話框補充說明：', none:'（沒有項目）' },
+    en: { notOn:'These are NOT on the card. Tell people directly, or add more in the chat box:', none:'(no items)' },
+    ja: { notOn:'次の内容はカードにありません。直接伝えるか、チャット欄で追加してください：', none:'（項目がありません）' },
   };
 
   const qs = new URLSearchParams(location.search);
@@ -107,14 +105,11 @@
     interp: LANG[qs.get('i')] ? qs.get('i') : '',
     ui: ['zh','en','ja'].includes(qs.get('ui')) ? qs.get('ui') : 'en',
     unmatched: (() => { try { const u = JSON.parse(qs.get('u') || '[]'); return Array.isArray(u) ? u : []; } catch (e) { return []; } })(),
-    showNotice: true, panel: false, big: false,
+    showNotice: true, big: false,
   };
-  S.panel = S.needs.size === 0;
   const t = T[S.ui];
   const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
   const tr = (r) => S.ui === 'zh' ? r[3] : S.ui === 'en' ? r[4] : '';
-  const short = (r) => S.ui === 'zh' ? r[5] : S.ui === 'en' ? r[6] : r[2].replace(/<br>.*/, '');
-  const lab3 = (arr) => S.ui === 'zh' ? arr[1] : S.ui === 'en' ? arr[2] : arr[0];
 
   function render() {
     let h = `<div class="brand">Help <i>✦</i> Card</div>`;
@@ -124,7 +119,7 @@
     h += `<div class="sos"><div class="ja">${HEAD.ja}</div>${S.ui !== 'ja' ? `<div class="sub">${HEAD[S.ui]}</div>` : ''}</div>`;
     h += `<div class="card list">`;
     const items = ORDER.filter(k => S.needs.has(k));
-    if (!items.length) h += `<div class="empty">${t.pick}</div>`;
+    if (!items.length) h += `<div class="empty">${t.none}</div>`;
     items.forEach((k, idx) => {
       const r = P[k];
       let ja = r[2], tx = tr(r), extra = '';
@@ -143,20 +138,7 @@
         `<button class="x" data-act="del" data-k="${k}" aria-label="remove">✕</button></div>`;
     });
     h += `</div>`;
-    h += `<div class="row"><button class="btn ghost" data-act="panel">${S.panel ? t.close : t.add}</button><button class="btn" data-act="big">${t.big}</button></div>`;
-    if (S.panel) {
-      h += `<div class="card panel"><div class="chips">` +
-        ORDER.filter(k => !S.needs.has(k)).map(k => `<button class="chip" data-act="add" data-k="${k}">${P[k][0]} ${short(P[k])}</button>`).join('') + `</div>`;
-      if (S.needs.has('allergy')) {
-        h += `<h3>${t.alg}</h3><div class="chips">` + Object.keys(ALG).map(a =>
-          `<button class="chip ${S.allergens.has(a) ? 'on' : ''}" data-act="alg" data-k="${a}">${lab3(ALG[a])}</button>`).join('') + `</div>`;
-      }
-      if (S.needs.has('no_japanese')) {
-        h += `<h3>${t.lang}</h3><div class="chips">` + Object.keys(LANG).map(l =>
-          `<button class="chip ${S.interp === l ? 'on' : ''}" data-act="lang" data-k="${l}">${lab3(LANG[l])}</button>`).join('') + `</div>`;
-      }
-      h += `</div>`;
-    }
+    h += `<div class="row"><button class="btn" data-act="big" aria-label="bigger text">A ＋</button></div>`;
     h += `<div class="foot">このカードは端末内（オフライン）で作成されました。<br>日本語の文はすべて事前に確認済みの定型文です。<br>Generated on-device, offline. Japanese sentences are pre-written, not AI-generated.</div>`;
     document.body.classList.toggle('big', S.big);
     document.getElementById('root').innerHTML = h;
@@ -167,10 +149,6 @@
     const k = b.dataset.k;
     switch (b.dataset.act) {
       case 'del': S.needs.delete(k); if (k === 'allergy') S.allergens.clear(); if (k === 'no_japanese') S.interp = ''; break;
-      case 'add': S.needs.add(k); break;
-      case 'alg': S.allergens.has(k) ? S.allergens.delete(k) : S.allergens.add(k); break;
-      case 'lang': S.interp = S.interp === k ? '' : k; break;
-      case 'panel': S.panel = !S.panel; break;
       case 'big': S.big = !S.big; break;
       case 'notice': S.showNotice = false; break;
     }

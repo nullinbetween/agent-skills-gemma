@@ -20,7 +20,7 @@ You only extract facts into fields. The memo has fixed Japanese labels and the p
   - `eating`, `drinking`, `urine`: `normal`, `less`, `very_little`
   - `vomit_count`, `diarrhea_count`: times per day
   - `notes`: other details, copied in the parent's own words
-  - `ui_lang`: `zh`, `en` or `ja` = language the parent wrote in
+  - `ui_lang`: language the parent wrote in: `zh`, `en` or `ja`. Chinese mixed with English → `zh`. Any other language → `en`
 
 Example: 「兒子發燒三天 40 度 剛剛還嘔吐」 → `{"symptoms":["fever","vomiting"],"fever_days":3,"temps":[{"temp":40}],"ui_lang":"zh"}`
 

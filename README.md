@@ -34,5 +34,5 @@ Everything runs offline in the app's webview — no network, no API key. Offline
 
 - Not a medical or emergency service. The skills only make cards to show to people on site; they never suggest phone numbers (a small model can mistype them).
 - `sick-visit-memo` is a parent's record, not a diagnosis.
-- Cards are editable: ✕ removes an item, + Add opens a checklist. Anything the model could not map is shown to the user, never silently dropped.
+- ✕ removes an item from the card. To add something, the user just says it again in the chat, in their own words; the model re-issues the card with the full list. Anything the model could not map is shown to the user, never silently dropped.
 - Japanese phrase list is a first version; additions welcome.
