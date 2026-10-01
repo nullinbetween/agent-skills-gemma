@@ -2,9 +2,11 @@
 
 Two agent skills for **Google AI Edge Gallery** (tested target: Gemma 4 E4B-it / E2B-it on phone), built for foreign residents in Japan.
 
+**Supported languages: Traditional Chinese (繁體中文) and English only.** Users type in Chinese or English; every Japanese line on the card has a pre-written Traditional Chinese or English line under it so the user can check it. Other languages are not supported yet (the card falls back to English).
+
 | Skill | What it does | Load URL |
 |---|---|---|
-| `disaster-help-card` | Say your situation in any language → a large Japanese help card to show shelter staff | `https://nullinbetween.github.io/agent-skills-gemma/disaster-help-card` |
+| `disaster-help-card` | Say your situation in Chinese or English → a large Japanese help card to show shelter staff | `https://nullinbetween.github.io/agent-skills-gemma/disaster-help-card` |
 | `sick-visit-memo` | Describe your child's illness → a Japanese 受診メモ for the pediatrician | `https://nullinbetween.github.io/agent-skills-gemma/sick-visit-memo` |
 
 In the app: Agent Skills → Skills chip → (+) → load from URL → paste the URL above.

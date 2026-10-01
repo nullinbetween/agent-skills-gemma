@@ -100,7 +100,7 @@
   if (d.dc !== undefined) row('dia', pair(`1日${d.dc}回`, ui === 'zh' ? `一天${d.dc}次` : `${d.dc} times a day`));
   if (d.n) row('note', `<div class="note">${esc(d.n)}</div>`);
   h += `</div>`;
-  h += `<div class="foot">※保護者による記録です。診断ではありません。<br>端末内（オフライン）で作成。日本語は定型文で、AIが生成した文ではありません。<br>Parent's record, not a diagnosis. Generated on-device; Japanese is fixed templates.</div>`;
+  h += `<div class="foot">※保護者による記録です。診断ではありません。<br>端末内（オフライン）で作成。日本語は定型文で、AIが生成した文ではありません。<br>Parent's record, not a diagnosis. Generated on-device; Japanese is fixed templates.<br>對照語言 Check language：繁體中文 / English</div>`;
   document.getElementById('root').innerHTML = h;
 </script>
 </body>
