@@ -42,6 +42,14 @@
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 7px 12px; font-size: 14px; }
   .chip.on { background: var(--rose); border-color: var(--rose-deep); }
+  .aibox { margin-top: 14px; border: 1.5px dashed var(--sky-deep); border-radius: 16px; padding: 12px 14px; background: rgba(203,218,238,.25); }
+  .aihead { font-size: 13px; font-weight: 700; color: var(--sky-deep); }
+  .aihead span { display: block; font-weight: 400; font-size: 11.5px; color: var(--ink-soft); }
+  .aija { font-size: 20px; font-weight: 700; line-height: 1.6; margin-top: 8px; word-break: keep-all; overflow-wrap: anywhere; }
+  .aitr { font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
+  .aiorig { font-size: 13.5px; background: #fff; border-radius: 10px; padding: 6px 10px; margin-top: 6px; }
+  .aiorig b { color: var(--ink-soft); font-weight: 600; margin-right: 6px; }
+  .big .aija { font-size: 27px; }
   .ja { word-break: keep-all; overflow-wrap: anywhere; }  /* 分かち書き: break lines only at the spaces */
   rt { font-size: .5em; font-weight: 500; color: var(--ink-soft); }
   .sos rt { color: rgba(255,255,255,.85); }
@@ -58,10 +66,13 @@
 
   // code: [icon, tone, Japanese, 中文, English, short label 中文, short label English]
   const P = {
+    fire:        ['🔥','red','火事（かじ）です。','發生火災了。','There is a fire.','火災','Fire'],
     emergency:   ['🚑','red','救急車（きゅうきゅうしゃ）を 呼（よ）んで ください。','請幫我叫救護車。','Please call an ambulance.','叫救護車','Ambulance'],
     danger:      ['🆘','red','知（し）らない 人（ひと）が ついて きます。こわいです。たすけて ください。','有不認識的人跟著我，我很害怕，請幫幫我。','A stranger is following me. I am scared. Please help.','被跟蹤／有危險','Followed / unsafe'],
+    trapped_person:['🏚️','red','建物（たてもの）の 中（なか）に 人（ひと）が います。たすけて ください。','建築物裡面還有人，請救救他們。','A person is still inside the building. Please help.','有人困在裡面','Person trapped'],
     injured:     ['🩹','rose','けがを して います。手当（てあ）てを して ください。','我受傷了，請幫我處理傷口。','I am injured. Please give first aid.','我受傷','I am injured'],
     family_injured:['🤕','rose','家族（かぞく）が けがを して います。たすけて ください。','我的家人受傷了，請幫忙。','My family member is injured. Please help.','家人受傷','Family injured'],
+    trapped_pet: ['🐾','rose','建物（たてもの）の 中（なか）に ペットが います。','建築物裡面還有我的寵物。','My pet is still inside the building.','寵物困在裡面','Pet trapped'],
     sick:        ['🤒','rose','体（からだ）の 調子（ちょうし）が 悪（わる）いです。','我身體不舒服。','I feel sick.','身體不舒服','Feel sick'],
     pregnant:    ['🤰','rose','おなかに 赤（あか）ちゃんが います。','我懷孕了。','I am pregnant.','懷孕','Pregnant'],
     mobility:    ['♿','rose','ひとりで 歩（ある）けません。手伝（てつだ）って ください。','我沒辦法自己走，請幫我。','I cannot walk on my own. Please help me.','移動需要協助','Need help moving'],
@@ -72,6 +83,7 @@
     water:       ['💧','gold','飲（の）む 水（みず）を ください。','我需要飲用水。','I need drinking water.','飲用水','Water'],
     food:        ['🍙','gold','食（た）べものを ください。','我需要食物。','I need food.','食物','Food'],
     with_child:  ['👶','lav','小（ちい）さい 子（こ）どもと いっしょです。','我帶著小孩。','I am with a small child.','帶著小孩','With a child'],
+    with_pet:    ['🐕','lav','ペットと いっしょです。','我帶著寵物。','I am with my pet.','帶著寵物','With a pet'],
     formula:     ['🍼','lav','赤（あか）ちゃんの ミルクを ください。','我需要嬰兒奶粉。','I need baby formula.','嬰兒奶粉','Baby formula'],
     diapers:     ['🧷','lav','おむつを ください。','我需要尿布。','I need diapers.','尿布','Diapers'],
     lost_family: ['👨‍👩‍👧','lav','家族（かぞく）と はなれました。家族（かぞく）を さがして います。','我和家人走散了，正在找家人。','I got separated from my family. I am looking for them.','和家人走散','Lost family'],
@@ -81,7 +93,8 @@
     toilet:      ['🚻','sky','トイレは どこですか。','廁所在哪裡？','Where is the toilet?','廁所在哪','Toilet'],
     charging:    ['🔋','sky','スマホを 充電（じゅうでん）したいです。','我想幫手機充電。','I want to charge my phone.','手機充電','Charge phone'],
   };
-  const ORDER = Object.keys(P);
+  const ORDER = ['fire','emergency','danger','trapped_person','injured','family_injured','trapped_pet','sick','pregnant','mobility','medicine',
+    'allergy','no_pork','vegetarian','water','food','with_child','with_pet','formula','diapers','lost_family','no_japanese','other','shelter','toilet','charging'];
 
   const ALG = { egg:['卵（たまご）','蛋','egg'], milk:['牛乳（ぎゅうにゅう）・乳製品（にゅうせいひん）','牛奶／乳製品','milk / dairy'], wheat:['小麦（こむぎ）','小麥','wheat'],
     shrimp:['えび','蝦','shrimp'], crab:['かに','蟹','crab'], buckwheat:['そば','蕎麥','buckwheat'],
@@ -95,9 +108,9 @@
 
   // UI words in the user's language (fallback: English)
   const T = {
-    zh: { notOn:'這些內容卡片上沒有。請直接告訴對方，或在對話框補充說明：', none:'（沒有項目）' },
-    en: { notOn:'These are NOT on the card. Tell people directly, or add more in the chat box:', none:'(no items)' },
-    ja: { notOn:'次の内容はカードにありません。直接伝えるか、チャット欄で追加してください：', none:'（項目がありません）' },
+    zh: { ai:'AI 翻譯（可能有錯，請對照下面的原文）', orig:'原文', notOn:'這些內容卡片上沒有。請直接告訴對方，或在對話框補充說明：', none:'（沒有項目）' },
+    en: { ai:'AI translation (may contain mistakes; check against the original below)', orig:'Original', notOn:'These are NOT on the card. Tell people directly, or add more in the chat box:', none:'(no items)' },
+    ja: { ai:'', orig:'原文', notOn:'次の内容はカードにありません。直接伝えるか、チャット欄で追加してください：', none:'（項目がありません）' },
   };
 
   const qs = new URLSearchParams(location.search);
@@ -108,6 +121,7 @@
     interp: LANG[qs.get('i')] ? qs.get('i') : '',
     ui: ['zh','en','ja'].includes(qs.get('ui')) ? qs.get('ui') : 'en',
     unmatched: (() => { try { const u = JSON.parse(qs.get('u') || '[]'); return Array.isArray(u) ? u : []; } catch (e) { return []; } })(),
+    yasashii: qs.get('y') || '', original: qs.get('o') || '',
     showNotice: true, big: false,
   };
   const t = T[S.ui];
@@ -138,14 +152,20 @@
         ja += `<br><b>${LANG[S.interp][0]}</b>が 話（はな）せる 人（ひと）は いますか。`;
         if (tx) tx += ' ' + (S.ui === 'zh' ? `有會說${LANG[S.interp][1]}的人嗎？` : `Is there anyone who speaks ${LANG[S.interp][2]}?`);
       }
-      if (k === 'other' && S.unmatched.length) extra = `<div class="own">本人（ほんにん）の ことば：${S.unmatched.map(u => '「' + esc(u) + '」').join(' ')}</div>`;
+      if (k === 'other' && S.unmatched.length && !S.yasashii) extra = `<div class="own">本人（ほんにん）の ことば：${S.unmatched.map(u => '「' + esc(u) + '」').join(' ')}</div>`;
       h += `<div class="item t-${r[1]}"><div class="ico">${r[0]}</div><div class="body"><div class="num">${String(idx + 1).padStart(2, '0')}</div>` +
         `<div class="ja">${ja}</div>${tx ? `<div class="tr">${tx}</div>` : ''}${extra}</div>` +
         `<button class="x" data-act="del" data-k="${k}" aria-label="remove">✕</button></div>`;
     });
     h += `</div>`;
+    if (S.yasashii) {
+      h += `<div class="aibox"><div class="aihead">本人（ほんにん）の 話（はなし）・AIの 翻訳（ほんやく）<span>まちがいが あるかも しれません</span></div>` +
+        `<div class="aija">${esc(S.yasashii)}</div>` +
+        (t.ai ? `<div class="aitr">${t.ai}</div>` : '') +
+        (S.original ? `<div class="aiorig"><b>${t.orig}</b>${esc(S.original)}</div>` : '') + `</div>`;
+    }
     h += `<div class="row"><button class="btn" data-act="big" aria-label="bigger text">A ＋</button></div>`;
-    h += `<div class="foot">このカードは端末内（オフライン）で作成されました。<br>日本語の文はすべて事前に確認済みの定型文です。<br>Generated on-device, offline. Japanese sentences are pre-written, not AI-generated.<br>對照語言 Check language：繁體中文 / English</div>`;
+    h += `<div class="foot">このカードは端末内（オフライン）で作成されました。<br>項目の日本語は事前に確認済みの定型文です。点線の枠だけがAIの翻訳です。<br>Generated on-device, offline. Card items are pre-written Japanese; only the dashed box is an AI translation.<br>對照語言 Check language：繁體中文 / English</div>`;
     document.body.classList.toggle('big', S.big);
     document.getElementById('root').innerHTML = ruby(h);
   }

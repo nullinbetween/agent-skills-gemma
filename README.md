@@ -32,6 +32,10 @@ Everything runs offline in the app's webview — no network, no API key. Offline
 
 `.nojekyll` is required: without it GitHub Pages runs Jekyll and turns `SKILL.md` (it has front matter) into HTML.
 
+## AI translation box (disaster-help-card)
+
+Card items use pre-written Japanese. In addition, the model translates the user's whole message into easy Japanese (やさしい日本語). It is shown in a separate dashed box, labelled as an AI translation that may contain mistakes, with the user's original message under it so the user can check.
+
 ## Limits
 
 - Not a medical or emergency service. The skills only make cards to show to people on site; they never suggest phone numbers (a small model can mistype them).

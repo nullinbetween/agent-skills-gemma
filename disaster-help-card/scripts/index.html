@@ -4,7 +4,7 @@
 <script>
   // Validates the codes the model picked, then hands them to the card webview.
   // Japanese and translations live ONLY in assets/card.html (single source of truth).
-  const NEEDS = ['emergency','injured','family_injured','sick','danger','medicine','allergy','no_pork','vegetarian',
+  const NEEDS = ['emergency','fire','trapped_person','trapped_pet','with_pet','injured','family_injured','sick','danger','medicine','allergy','no_pork','vegetarian',
     'water','food','with_child','formula','diapers','pregnant','mobility','lost_family','no_japanese',
     'shelter','toilet','charging','other'];
   const ALLERGENS = ['egg','milk','wheat','shrimp','crab','buckwheat','peanut','walnut','soy','sesame','fish'];
@@ -42,18 +42,27 @@
       const unmatched = toArr(input.unmatched).map(s => String(s).trim()).filter(Boolean).concat(rejected).slice(0, 6);
       if (unmatched.length && !needs.includes('other')) needs.push('other');
 
+      // Free translation by the model: shown in a separate, clearly labelled "AI translation" box with the original under it.
+      const clip = (v, n) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, n);
+      const original = clip(input.original, 300);
+      const yasashii = clip(input.yasashii, 300);
+      if (yasashii && !needs.length) needs.push('other');
+
       let ui = norm(input.ui_lang);
       if (!UI.includes(ui)) ui = 'en';
 
       const q = new URLSearchParams({ n: needs.join(','), a: allergens.join(','), i: interpreter, ui });
       if (unmatched.length) q.set('u', JSON.stringify(unmatched).slice(0, 600));
+      if (yasashii) q.set('y', yasashii);
+      if (original) q.set('o', original);
 
       if (!needs.length) {
         return JSON.stringify({ error: 'No needs given. Do not make a card. Ask the user, in their own language, what help they need.' });
       }
       let msg = `Card created: ${needs.join(', ')}` + (allergens.length ? ` | allergens: ${allergens.join(', ')}` : '') + (interpreter ? ` | interpreter: ${interpreter}` : '');
       if (unmatched.length) msg += ` | shown to user as not on card: ${unmatched.join(' / ')}`;
-      msg += '. Reply in one sentence: tap the card, check it, show it to people nearby. No phone numbers. No Japanese.';
+      msg += yasashii ? ' | AI translation box shown' : ' | no translation given (add yasashii next time)';
+      msg += '. Reply in one sentence: tap the card, check it, show it to people nearby. No phone numbers.';
 
       return JSON.stringify({ result: msg, webview: { url: 'card.html?' + q.toString() } });
     } catch (e) {
