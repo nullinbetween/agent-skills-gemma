@@ -42,6 +42,9 @@
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 7px 12px; font-size: 14px; }
   .chip.on { background: var(--rose); border-color: var(--rose-deep); }
+  .ja { word-break: keep-all; overflow-wrap: anywhere; }  /* 分かち書き: break lines only at the spaces */
+  rt { font-size: .5em; font-weight: 500; color: var(--ink-soft); }
+  .sos rt { color: rgba(255,255,255,.85); }
   .foot { font-size: 11px; color: var(--ink-faint); line-height: 1.6; text-align: center; margin-top: 14px; }
   .big .item .ja { font-size: 28px; } .big .sos .ja { font-size: 27px; }
 </style>
@@ -50,45 +53,45 @@
 <div id="root"></div>
 <script>
   // ── Single source of truth for all card text. Japanese must be proofread by a human. ──
-  const HEAD = { ja: 'すみません。助けが必要です。<br>この画面を読んでください。',
+  const HEAD = { ja: 'すみません。たすけて ください。<br>この 画面（がめん）を 読（よ）んで ください。',
     zh: '不好意思，我需要幫助。請看這個畫面。', en: 'Excuse me, I need help. Please read this screen.' };
 
   // code: [icon, tone, Japanese, 中文, English, short label 中文, short label English]
   const P = {
-    emergency:   ['🚑','red','救急車を呼んでください。','請幫我叫救護車。','Please call an ambulance.','叫救護車','Ambulance'],
-    danger:      ['🆘','red','不審な人につけられています。助けてください。','有可疑的人在跟蹤我，請幫幫我。','A suspicious person is following me. Please help.','被跟蹤／有危險','Followed / unsafe'],
-    injured:     ['🩹','rose','けがをしています。手当てをお願いします。','我受傷了，請幫我處理傷口。','I am injured. Please give first aid.','我受傷','I am injured'],
-    family_injured:['🤕','rose','家族がけがをしています。助けてください。','我的家人受傷了，請幫忙。','My family member is injured. Please help.','家人受傷','Family injured'],
-    sick:        ['🤒','rose','体調が悪いです。','我身體不舒服。','I feel sick.','身體不舒服','Feel sick'],
-    pregnant:    ['🤰','rose','妊娠しています。','我懷孕了。','I am pregnant.','懷孕','Pregnant'],
-    mobility:    ['♿','rose','移動に手助けが必要です。','我移動需要協助。','I need help moving.','移動需要協助','Need help moving'],
-    medicine:    ['💊','rose','いつも飲んでいる薬が必要です。','我需要平常在吃的藥。','I need my regular medicine.','平常吃的藥','Regular medicine'],
-    allergy:     ['⚠️','gold','食物アレルギーがあります。','我有食物過敏。','I have a food allergy.','食物過敏','Food allergy'],
-    no_pork:     ['🚫','gold','豚肉が食べられません。','我不能吃豬肉。','I cannot eat pork.','不吃豬肉','No pork'],
-    vegetarian:  ['🥦','gold','肉と魚が食べられません。','我不吃肉和魚。','I do not eat meat or fish.','不吃肉和魚','Vegetarian'],
-    water:       ['💧','gold','飲み水が必要です。','我需要飲用水。','I need drinking water.','飲用水','Water'],
-    food:        ['🍙','gold','食べ物が必要です。','我需要食物。','I need food.','食物','Food'],
-    with_child:  ['👶','lav','小さい子どもと一緒です。','我帶著小孩。','I am with a small child.','帶著小孩','With a child'],
-    formula:     ['🍼','lav','粉ミルクが必要です。','我需要嬰兒奶粉。','I need baby formula.','嬰兒奶粉','Baby formula'],
-    diapers:     ['🧷','lav','おむつが必要です。','我需要尿布。','I need diapers.','尿布','Diapers'],
-    lost_family: ['👨‍👩‍👧','lav','家族とはぐれました。','我和家人走散了。','I am separated from my family.','和家人走散','Lost family'],
-    no_japanese: ['🗣️','sky','日本語があまり話せません。<br>やさしい日本語で、ゆっくり話してください。','我不太會說日文，請用簡單的日文慢慢說。','I do not speak much Japanese. Please speak slowly in simple Japanese.','不太會日文','Little Japanese'],
-    other:       ['💬','sky','ほかにも困っていることがあります。話を聞いてください。','我還有其他困難，請聽我說。','I have another problem. Please listen to me.','其他困難','Something else'],
-    shelter:     ['🏫','sky','避難所はどこですか。','避難所在哪裡？','Where is the evacuation shelter?','避難所在哪','Shelter'],
-    toilet:      ['🚻','sky','トイレはどこですか。','廁所在哪裡？','Where is the toilet?','廁所在哪','Toilet'],
-    charging:    ['🔋','sky','携帯電話を充電したいです。','我想幫手機充電。','I want to charge my phone.','手機充電','Charge phone'],
+    emergency:   ['🚑','red','救急車（きゅうきゅうしゃ）を 呼（よ）んで ください。','請幫我叫救護車。','Please call an ambulance.','叫救護車','Ambulance'],
+    danger:      ['🆘','red','知（し）らない 人（ひと）が ついて きます。こわいです。たすけて ください。','有不認識的人跟著我，我很害怕，請幫幫我。','A stranger is following me. I am scared. Please help.','被跟蹤／有危險','Followed / unsafe'],
+    injured:     ['🩹','rose','けがを して います。手当（てあ）てを して ください。','我受傷了，請幫我處理傷口。','I am injured. Please give first aid.','我受傷','I am injured'],
+    family_injured:['🤕','rose','家族（かぞく）が けがを して います。たすけて ください。','我的家人受傷了，請幫忙。','My family member is injured. Please help.','家人受傷','Family injured'],
+    sick:        ['🤒','rose','体（からだ）の 調子（ちょうし）が 悪（わる）いです。','我身體不舒服。','I feel sick.','身體不舒服','Feel sick'],
+    pregnant:    ['🤰','rose','おなかに 赤（あか）ちゃんが います。','我懷孕了。','I am pregnant.','懷孕','Pregnant'],
+    mobility:    ['♿','rose','ひとりで 歩（ある）けません。手伝（てつだ）って ください。','我沒辦法自己走，請幫我。','I cannot walk on my own. Please help me.','移動需要協助','Need help moving'],
+    medicine:    ['💊','rose','いつも 飲（の）む 薬（くすり）を ください。','我需要平常在吃的藥。','I need my regular medicine.','平常吃的藥','Regular medicine'],
+    allergy:     ['⚠️','gold','食（た）べものの アレルギーが あります。','我有食物過敏。','I have a food allergy.','食物過敏','Food allergy'],
+    no_pork:     ['🚫','gold','豚肉（ぶたにく）は 食（た）べられません。','我不能吃豬肉。','I cannot eat pork.','不吃豬肉','No pork'],
+    vegetarian:  ['🥦','gold','肉（にく）と 魚（さかな）は 食（た）べられません。','我不吃肉和魚。','I do not eat meat or fish.','不吃肉和魚','Vegetarian'],
+    water:       ['💧','gold','飲（の）む 水（みず）を ください。','我需要飲用水。','I need drinking water.','飲用水','Water'],
+    food:        ['🍙','gold','食（た）べものを ください。','我需要食物。','I need food.','食物','Food'],
+    with_child:  ['👶','lav','小（ちい）さい 子（こ）どもと いっしょです。','我帶著小孩。','I am with a small child.','帶著小孩','With a child'],
+    formula:     ['🍼','lav','赤（あか）ちゃんの ミルクを ください。','我需要嬰兒奶粉。','I need baby formula.','嬰兒奶粉','Baby formula'],
+    diapers:     ['🧷','lav','おむつを ください。','我需要尿布。','I need diapers.','尿布','Diapers'],
+    lost_family: ['👨‍👩‍👧','lav','家族（かぞく）と はなれました。家族（かぞく）を さがして います。','我和家人走散了，正在找家人。','I got separated from my family. I am looking for them.','和家人走散','Lost family'],
+    no_japanese: ['🗣️','sky','日本語（にほんご）が あまり わかりません。<br>やさしい 日本語（にほんご）で ゆっくり 話（はな）して ください。','我不太會說日文，請用簡單的日文慢慢說。','I do not speak much Japanese. Please speak slowly in simple Japanese.','不太會日文','Little Japanese'],
+    other:       ['💬','sky','ほかにも こまって いる ことが あります。話（はなし）を 聞（き）いて ください。','我還有其他困難，請聽我說。','I have another problem. Please listen to me.','其他困難','Something else'],
+    shelter:     ['🏫','sky','避難所（ひなんじょ）は どこですか。','避難所在哪裡？','Where is the evacuation shelter?','避難所在哪','Shelter'],
+    toilet:      ['🚻','sky','トイレは どこですか。','廁所在哪裡？','Where is the toilet?','廁所在哪','Toilet'],
+    charging:    ['🔋','sky','スマホを 充電（じゅうでん）したいです。','我想幫手機充電。','I want to charge my phone.','手機充電','Charge phone'],
   };
   const ORDER = Object.keys(P);
 
-  const ALG = { egg:['卵','蛋','egg'], milk:['乳（牛乳・乳製品）','牛奶／乳製品','milk / dairy'], wheat:['小麦','小麥','wheat'],
+  const ALG = { egg:['卵（たまご）','蛋','egg'], milk:['牛乳（ぎゅうにゅう）・乳製品（にゅうせいひん）','牛奶／乳製品','milk / dairy'], wheat:['小麦（こむぎ）','小麥','wheat'],
     shrimp:['えび','蝦','shrimp'], crab:['かに','蟹','crab'], buckwheat:['そば','蕎麥','buckwheat'],
-    peanut:['落花生（ピーナッツ）','花生','peanut'], walnut:['くるみ','核桃','walnut'], soy:['大豆','大豆','soy'],
-    sesame:['ごま','芝麻','sesame'], fish:['魚','魚','fish'] };
+    peanut:['落花生（らっかせい）（ピーナッツ）','花生','peanut'], walnut:['くるみ','核桃','walnut'], soy:['大豆（だいず）','大豆','soy'],
+    sesame:['ごま','芝麻','sesame'], fish:['魚（さかな）','魚','fish'] };
 
-  const LANG = { english:['英語','英文','English'], mandarin:['中国語（普通話）','普通話','Mandarin'], cantonese:['広東語','廣東話','Cantonese'],
-    korean:['韓国語','韓文','Korean'], vietnamese:['ベトナム語','越南語','Vietnamese'], nepali:['ネパール語','尼泊爾語','Nepali'],
-    tagalog:['タガログ語','他加祿語','Tagalog'], thai:['タイ語','泰文','Thai'], indonesian:['インドネシア語','印尼文','Indonesian'],
-    spanish:['スペイン語','西班牙文','Spanish'], portuguese:['ポルトガル語','葡萄牙文','Portuguese'], french:['フランス語','法文','French'] };
+  const LANG = { english:['英語（えいご）','英文','English'], mandarin:['中国語（ちゅうごくご）','普通話','Mandarin'], cantonese:['広東語（かんとんご）','廣東話','Cantonese'],
+    korean:['韓国語（かんこくご）','韓文','Korean'], vietnamese:['ベトナム語（ご）','越南語','Vietnamese'], nepali:['ネパール語（ご）','尼泊爾語','Nepali'],
+    tagalog:['タガログ語（ご）','他加祿語','Tagalog'], thai:['タイ語（ご）','泰文','Thai'], indonesian:['インドネシア語（ご）','印尼文','Indonesian'],
+    spanish:['スペイン語（ご）','西班牙文','Spanish'], portuguese:['ポルトガル語（ご）','葡萄牙文','Portuguese'], french:['フランス語（ご）','法文','French'] };
 
   // UI words in the user's language (fallback: English)
   const T = {
@@ -111,6 +114,9 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
   const tr = (r) => S.ui === 'zh' ? r[3] : S.ui === 'en' ? r[4] : '';
 
+  // Omamori notation 漢字（かな） → <ruby> so staff read clean text and the reading sits above the kanji
+  const ruby = (html) => html.replace(/([々〆一-龯]+)（([ぁ-ゖー]+)）/g, '<ruby>$1<rt>$2</rt></ruby>');
+
   function render() {
     let h = `<div class="brand">Help <i>✦</i> Card</div>`;
     if (S.unmatched.length && S.showNotice) {
@@ -125,14 +131,14 @@
       let ja = r[2], tx = tr(r), extra = '';
       const al = [...S.allergens];
       if (k === 'allergy' && al.length) {
-        ja += `<br>次のものが食べられません：<br><b>${al.map(a => ALG[a][0]).join('、')}</b>`;
+        ja += `<br>これは 食（た）べられません：<br><b>${al.map(a => ALG[a][0]).join('、')}</b>`;
         if (tx) tx += ' ' + (S.ui === 'zh' ? '不能吃：' + al.map(a => ALG[a][1]).join('、') : 'Cannot eat: ' + al.map(a => ALG[a][2]).join(', '));
       }
       if (k === 'no_japanese' && S.interp) {
-        ja += `<br><b>${LANG[S.interp][0]}</b>が話せる人はいますか。`;
+        ja += `<br><b>${LANG[S.interp][0]}</b>が 話（はな）せる 人（ひと）は いますか。`;
         if (tx) tx += ' ' + (S.ui === 'zh' ? `有會說${LANG[S.interp][1]}的人嗎？` : `Is there anyone who speaks ${LANG[S.interp][2]}?`);
       }
-      if (k === 'other' && S.unmatched.length) extra = `<div class="own">本人の言葉：${S.unmatched.map(u => '「' + esc(u) + '」').join(' ')}</div>`;
+      if (k === 'other' && S.unmatched.length) extra = `<div class="own">本人（ほんにん）の ことば：${S.unmatched.map(u => '「' + esc(u) + '」').join(' ')}</div>`;
       h += `<div class="item t-${r[1]}"><div class="ico">${r[0]}</div><div class="body"><div class="num">${String(idx + 1).padStart(2, '0')}</div>` +
         `<div class="ja">${ja}</div>${tx ? `<div class="tr">${tx}</div>` : ''}${extra}</div>` +
         `<button class="x" data-act="del" data-k="${k}" aria-label="remove">✕</button></div>`;
@@ -141,7 +147,7 @@
     h += `<div class="row"><button class="btn" data-act="big" aria-label="bigger text">A ＋</button></div>`;
     h += `<div class="foot">このカードは端末内（オフライン）で作成されました。<br>日本語の文はすべて事前に確認済みの定型文です。<br>Generated on-device, offline. Japanese sentences are pre-written, not AI-generated.<br>對照語言 Check language：繁體中文 / English</div>`;
     document.body.classList.toggle('big', S.big);
-    document.getElementById('root').innerHTML = h;
+    document.getElementById('root').innerHTML = ruby(h);
   }
 
   document.addEventListener('click', (e) => {
